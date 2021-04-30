@@ -75,14 +75,14 @@ export default function Dashboard(props) {
                 </Grid>
                 <Grid item xs={6}>
               <LineChart
-                width={100}
-                height={30}
+                width={110}
+                height={70}
                 data={[
                   { value: 10 },
                   { value: 15 },
-                  { value: 10 },
-                  { value: 17 },
+                  { value: 12 },
                   { value: 18 },
+                  { value: 17 },
                 ]}
               >
                 <Line

@@ -33,14 +33,19 @@ function Login(props) {
   var [error, setError] = useState(null);
   var [activeTabId, setActiveTabId] = useState(0);
   var [nameValue, setNameValue] = useState("");
-  var [loginValue, setLoginValue] = useState("admin@flatlogic.com");
+  var [loginValue, setLoginValue] = useState("admin@gmail.com");
   var [passwordValue, setPasswordValue] = useState("password");
+  var [roleValue , setRoleValue] = useState("")
+  var [companyValue, setCompanyValue] = useState("")
+  var [forgotEmailValue, setforgotEmailValue] = useState("")
+  var [forgotPasswordValue, setforgotPasswordValue] = useState("")
 
+  
   return (
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>Material Admin</Typography>
+        <Typography className={classes.logotypeText}>  Admin  </Typography>
       </div>
       <div className={classes.formContainer}>
         <div className={classes.form}>
@@ -132,12 +137,15 @@ function Login(props) {
                   color="primary"
                   size="large"
                   className={classes.forgetButton}
+                  onClick = { () => setActiveTabId(2)}
                 >
                   Forget Password
                 </Button>
               </div>
             </React.Fragment>
           )}
+
+
           {activeTabId === 1 && (
             <React.Fragment>
               <Typography variant="h1" className={classes.greeting}>
@@ -196,6 +204,37 @@ function Login(props) {
                 type="password"
                 fullWidth
               />
+              <TextField
+                id="role"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={roleValue}
+                onChange={e => setRoleValue(e.target.value)}
+                margin="normal"
+                placeholder="Role"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                id="company"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={companyValue}
+                onChange={e => setCompanyValue(e.target.value)}
+                margin="normal"
+                placeholder="Company"
+                type="text"
+                fullWidth
+              />
+        
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />
@@ -214,7 +253,9 @@ function Login(props) {
                     disabled={
                       loginValue.length === 0 ||
                       passwordValue.length === 0 ||
-                      nameValue.length === 0
+                      nameValue.length === 0 ||
+                      roleValue.length === 0 ||
+                      roleValue === "user" ? companyValue.length === 0 : null
                     }
                     size="large"
                     variant="contained"
@@ -243,9 +284,86 @@ function Login(props) {
               </Button>
             </React.Fragment>
           )}
-        </div>
+
+      {activeTabId === 2 && (
+            <React.Fragment>
+              <Typography variant="h2" className={classes.subGreeting}>
+                Forgot your account ? 
+              </Typography>
+              <Fade in={error}>
+                <Typography color="secondary" className={classes.errorMessage}>
+                  User Does not Exist  :(
+                </Typography>
+              </Fade>
+              
+              <TextField
+                id="email"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={forgotEmailValue}
+                onChange={e => setforgotEmailValue(e.target.value)}
+                margin="normal"
+                placeholder="Email Adress"
+                type="email"
+                fullWidth
+              />
+
+              <TextField
+                id="password"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={forgotPasswordValue}
+                onChange={e => setforgotPasswordValue(e.target.value)}
+                margin="normal"
+                placeholder="Password"
+                type="password"
+                fullWidth
+              />
+            
+              <div className={classes.creatingButtonContainer}>
+                {isLoading ? (
+                  <CircularProgress size={26} />
+                ) : (
+                  <Button
+                    onClick={() =>
+                      loginUser(
+                        userDispatch,
+                        loginValue,
+                        passwordValue,
+                        props.history,
+                        setIsLoading,
+                        setError,
+                      )
+                    }
+                    disabled={
+                      forgotEmailValue.length === 0 ||
+                      forgotPasswordValue.length === 0 
+                    }
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    className={classes.createAccountButton}
+                  >
+                    Password Reset
+                  </Button>
+                )}
+              </div>
+              
+            </React.Fragment>
+          )}
+
+        </div> <br></br>
         <Typography color="primary" className={classes.copyright}>
-        © 2014-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://flatlogic.com" rel="noopener noreferrer" target="_blank">Flatlogic</a>, LLC. All rights reserved.
+        © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistaura.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
         </Typography>
       </div>
     </Grid>
