@@ -61,18 +61,20 @@ function Login(props) {
           </Tabs>
           {activeTabId === 0 && (
             <React.Fragment>
+              {new Date().getHours() <= 12 ? 
               <Typography variant="h1" className={classes.greeting}>
-                Good Morning, User
-              </Typography>
-              <Button size="large" className={classes.googleButton}>
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
-              <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
-              </div>
+                Good Morning, User 
+              </Typography>     : 
+              (
+                new Date().getHours() > 12 && new Date().getHours() <= 17 ?
+                <Typography variant="h1" className={classes.greeting}>
+                     Good Afternoon, User 
+                </Typography>       :
+                <Typography variant="h1" className={classes.greeting}>
+                 Good Evening, User 
+            </Typography>
+              ) }
+              
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
                   Something is wrong with your login or password :(
@@ -142,9 +144,18 @@ function Login(props) {
                   Forget Password
                 </Button>
               </div>
+
+              <div className={classes.formDividerContainer}>
+                <div className={classes.formDivider} />
+                <Typography className={classes.formDividerWord}>or</Typography>
+                <div className={classes.formDivider} />
+            </div>
+            <Button size="large" className={classes.googleButton}>
+                <img src={google} alt="google" className={classes.googleIcon} />
+                &nbsp;Sign in with Google
+            </Button>
             </React.Fragment>
           )}
-
 
           {activeTabId === 1 && (
             <React.Fragment>

@@ -10,6 +10,9 @@ import {
   LibraryBooks as LibraryIcon,
   HelpOutline as FAQIcon,
   ArrowBack as ArrowBackIcon,
+  SettingsPower as LogoutIcon,
+  Contacts as ContactIcon,
+  Person as PersonIcon,
 } from "@material-ui/icons";
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
@@ -33,19 +36,37 @@ const structure = [
   { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
   {
     id: 1,
-    label: "Message",
-    link: "/app/typography",
+    label: "Messages",
+    link: "/app/message",
     icon: <TypographyIcon />,
   },
-  { id: 2, label: "Users", link: "/app/tables", icon: <TableIcon /> },
+  { id: 2, label: "Users", link: "/app/users", icon: <TableIcon /> },
   {
     id: 3,
+    label: "Contacts",
+    link: "/app/contacts",
+    icon: <ContactIcon />,
+  },
+  {
+    id: 4,
+    label: "Profile",
+    link: "/app/profile",
+    icon: <PersonIcon />,
+  },
+  ,{
+    id: 5,
+    label: "Logout",
+    link: "/app/logout",
+    icon: <LogoutIcon />,
+  },
+  {
+    id: 6,
     label: "Notifications",
     link: "/app/notifications",
     icon: <NotificationsIcon />,
   },
   {
-    id: 4,
+    id: 7,
     label: "UI Elements",
     link: "/app/ui",
     icon: <UIElementsIcon />,
@@ -55,11 +76,11 @@ const structure = [
       { label: "Maps", link: "/app/ui/maps" },
     ],
   },
-  { id: 5, type: "divider" },
-  { id: 6, type: "title", label: "HELP" },
-  { id: 7, label: "Library", link: "https://flatlogic.com/templates", icon: <LibraryIcon /> },
-  { id: 8, label: "Support", link: "https://flatlogic.com/forum", icon: <SupportIcon /> },
-  { id: 9, label: "FAQ", link: "https://flatlogic.com/forum", icon: <FAQIcon /> }
+  // { id: 8, type: "divider" },
+  // { id: 9, type: "title", label: "HELP" },
+  // { id: 10, label: "Library", link: "https://flatlogic.com/templates", icon: <LibraryIcon /> },
+  // { id: 11, label: "Support", link: "https://flatlogic.com/forum", icon: <SupportIcon /> },
+  // { id: 12, label: "FAQ", link: "https://flatlogic.com/forum", icon: <FAQIcon /> }
 ];
 
 function Sidebar({ location }) {
