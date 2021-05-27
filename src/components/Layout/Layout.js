@@ -28,10 +28,12 @@ import Sidebar from "../Sidebar";
 import Dashboard from "../../pages/dashboard";
 import Message from "../../pages/message/Message";
 import Notifications from "../../pages/notifications";
+import Contacts from "../../pages/contacts/contacts"
 import Maps from "../../pages/maps";
 import Users from "../../pages/users/Users";
 import Icons from "../../pages/icons";
 import Charts from "../../pages/charts";
+import Profile from "../../pages/profile/profile"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -60,6 +62,10 @@ function Layout(props) {
               <Route path="/app/users" component={Users} />
               <Route path="/app/notifications" component={Notifications} />
               <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
+              <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />
+              <Route path="/app/contacts" component={Contacts} />
+              <Route path="/app/profile" component={Profile} />
+
               <Route
                 exact
                 path="/app/ui"

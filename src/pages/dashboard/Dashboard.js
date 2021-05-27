@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LoginUser from "../../context/UserContext"
 import {
   Grid,
   LinearProgress,
@@ -70,7 +71,7 @@ export default function Dashboard(props) {
               <Grid container item alignItems={"center"}>
                 <Grid item xs={6}>
               <Typography size="xl" weight="medium" noWrap>
-                12, 678
+
               </Typography>
                 </Grid>
                 <Grid item xs={6}>

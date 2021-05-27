@@ -9701,6 +9701,20 @@
   "resolved" "https://registry.npmjs.org/q/-/q-1.5.1.tgz"
   "version" "1.5.1"
 
+"qr.js@0.0.0":
+  "integrity" "sha1-ys6GOG9ZoNuAUPqQ2baw6IoeNk8="
+  "resolved" "https://registry.npmjs.org/qr.js/-/qr.js-0.0.0.tgz"
+  "version" "0.0.0"
+
+"qrcode.react@^1.0.1":
+  "integrity" "sha512-8d3Tackk8IRLXTo67Y+c1rpaiXjoz/Dd2HpcMdW//62/x8J1Nbho14Kh8x974t9prsLHN6XqVgcnRiBGFptQmg=="
+  "resolved" "https://registry.npmjs.org/qrcode.react/-/qrcode.react-1.0.1.tgz"
+  "version" "1.0.1"
+  dependencies:
+    "loose-envify" "^1.4.0"
+    "prop-types" "^15.6.0"
+    "qr.js" "0.0.0"
+
 "qs@~6.5.2":
   "integrity" "sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA=="
   "resolved" "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz"
@@ -10098,7 +10112,7 @@
     "prop-types" "^15.7.2"
     "react-lifecycles-compat" "^3.0.4"
 
-"react@^15.0.0 || ^16.0.0 || ^17.0.0", "react@^16.0.0 || ^17.0.0", "react@^16.14.0", "react@^16.3.0", "react@>= 0.14.0", "react@>=15.0.0", "react@>=16":
+"react@^15.0.0 || ^16.0.0 || ^17.0.0", "react@^15.5.3 || ^16.0.0 || ^17.0.0", "react@^16.0.0 || ^17.0.0", "react@^16.14.0", "react@^16.3.0", "react@>= 0.14.0", "react@>=15.0.0", "react@>=16":
   "integrity" "sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g=="
   "resolved" "https://registry.npmjs.org/react/-/react-16.14.0.tgz"
   "version" "16.14.0"

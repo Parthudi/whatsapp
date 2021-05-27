@@ -158,6 +158,48 @@ const mock = {
       email: "horadnia@wxample.com",
       status: "Sent"
     }
+  ],
+  contacts: [
+    {
+      id: 0,
+      company: "Mark Otto",
+      contry_code: "+91",
+      mobile: "1235469875",
+      email:"parth@xyz.com",
+      status: "Sent"
+    },
+    {
+      id: 1,
+      company: "Jacob Thornton",
+      contry_code: "+91",
+      mobile: "1235469875",
+      email: "thornton@wxample.com",
+      status: "Sent"
+    },
+    {
+      id: 2,
+      company: "Larry the Bird",
+      contry_code: "+91",
+      mobile: "1235469875",
+      email: "bird@wxample.com",
+      status: "Pending"
+    },
+    {
+      id: 3,
+      company: "Joseph May",
+      contry_code: "+91",
+      mobile: "1235469875",
+      email: "josephmay@wxample.com",
+      status: "Declined"
+    },
+    {
+      id: 4,
+      company: "Peter Horadnia",
+      contry_code: "+91",
+      mobile: "1235469875",
+      email: "horadnia@wxample.com",
+      status: "Sent"
+    }
   ]
 };
 

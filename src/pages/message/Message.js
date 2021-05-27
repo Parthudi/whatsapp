@@ -2,6 +2,9 @@ import React, {useState} from "react";
 import { Grid ,TextField,  Button,
   CircularProgress,
   Fade} from "@material-ui/core";
+import QRCode from "qrcode.react";
+
+import { messageUser, isAuthenticated } from "../../context/UserContext";
 
 // styles
 import useStyles from "./styles";
@@ -15,11 +18,28 @@ export default function MessagePage() {
   var classes = useStyles();
 
    // local
-   var [isLoading, setIsLoading] = useState(false);
-   var [error, setError] = useState(null);
-   var [contactValue, setContactValue] = useState("")
-   var [messageValue, setMessageValue] = useState("")
+   const [isLoading, setIsLoading] = useState(false);
+   const [error, setError] = useState(null);
+   const [response, setResponse] = useState("");
+   const [contactValue, setContactValue] = useState("");
+   const [messageValue, setMessageValue] = useState("");
  
+  const  {token} = isAuthenticated();
+
+  console.log("token : " +token);
+  const messageUserHandler = (contact, message) => {
+      messageUser(contact, message, token).then((response) => {
+          if(response.error) {
+            setError(true);
+            setIsLoading(false);
+           }else{
+             console.log("response : " +response);
+              setResponse(response);
+              setError(false);
+              setIsLoading(false);
+           }
+      })
+  }
 
   return (
     <>
@@ -75,17 +95,17 @@ export default function MessagePage() {
                     disabled={
                       contactValue.length <= 9  || messageValue.length === 0
                     }
-                    // onClick={() =>
-                    //   loginUser(
-                    //     setIsLoading,
-                    //     setError,
-                    //   )
-                    // }
+                    onClick={() =>
+                      messageUserHandler(
+                        contactValue,
+                        messageValue,
+                      )
+                    }
                     variant="contained"
                     color="primary"
                     size="large"
                   >
-                    Login
+                     Send 
                   </Button>
                 )}
               </div>
@@ -97,8 +117,7 @@ export default function MessagePage() {
         <Grid item xs={12} md={4}>
           <Widget title="QR CODE GENERATOR" disableWidgetMenu>
             <div className={classes.dashedBorder}>
-             
-
+               {response ? <QRCode value={response} size={256} /> : null} 
             </div>
           </Widget>
         </Grid>

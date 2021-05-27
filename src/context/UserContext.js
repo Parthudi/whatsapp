@@ -1,14 +1,18 @@
-import React from "react";
+import React, {useState} from "react";
 
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
 
 function userReducer(state, action) {
   switch (action.type) {
-    case "LOGIN_SUCCESS":
-      return { ...state, isAuthenticated: true };
+    case "REGISTER_FAILURE":
+      return { ...state, error: true, isAuthenticated: false};
     case "SIGN_OUT_SUCCESS":
-      return { ...state, isAuthenticated: false };
+      return { ...state,  error: false, isAuthenticated: false };
+    case "LOGIN_SUCCESS":
+      return { ...state, error: false,  isAuthenticated: true };
+    case "LOGIN_FAILURE":
+      return { ...state, error: true ,  isAuthenticated: false };
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
@@ -16,8 +20,10 @@ function userReducer(state, action) {
 }
 
 function UserProvider({ children }) {
+  const error = "Fill the correct details only!";
   var [state, dispatch] = React.useReducer(userReducer, {
-    isAuthenticated: !!localStorage.getItem("id_token"),
+      isAuthenticated: !!localStorage.getItem("TOKEN"),
+      error: !!error
   });
 
   return (
@@ -45,32 +51,102 @@ function useUserDispatch() {
   return context;
 }
 
-export { UserProvider, useUserState, useUserDispatch, loginUser, signOut };
-
 // ###########################################################
 
-function loginUser(dispatch, login, password, history, setIsLoading, setError) {
+async function SignupUser(dispatch, name, email ,password, role, company, history, setIsLoading, setError) {
   setError(false);
   setIsLoading(true);
 
-  if (!!login && !!password) {
-    setTimeout(() => {
-      localStorage.setItem('id_token', 1)
-      setError(null)
-      setIsLoading(false)
-      dispatch({ type: 'LOGIN_SUCCESS' })
+  if ( !!name && !!email && !!password && !!role ) {
+       await fetch(`http://localhost:4000/user/signup`,{
+              method: "POST",
+              headers: {
+                        Accept:  "application/json",
+                      "Content-Type": "application/json"
+              },
+              body: JSON.stringify({name,email,password,role, company})
+            }).then(response => response.json());
 
-      history.push('/app/dashboard')
-    }, 2000);
-  } else {
+          setIsLoading(false);
+          history.push("/login");
+  }else{
+          dispatch({ type: 'REGISTER_FAILURE' });
+          setError(true)
+          setIsLoading(false) 
+  }
+}
+
+async function LoginUser(dispatch, email, password, history, setIsLoading, setError) {
+  setError(false);
+  setIsLoading(true);
+
+  try{
+      const data = await fetch(`http://localhost:4000/user/login`,{
+                      method: "POST",
+                      headers: {
+                                Accept:  "application/json",
+                              "Content-Type": "application/json"
+                      },
+                      body: JSON.stringify({email, password})
+                    }).then(response => response.json()) ;
+            if(data.error){
+              console.log(":errorr");
+              throw new Error();
+            }else {
+               localStorage.setItem('TOKEN', JSON.stringify(data));
+            setError(false)
+            setIsLoading(false)
+          // setVisitsUser(VisitsUser +1);
+          // console.log("set users : " +VisitsUser);
+            dispatch({ type: 'LOGIN_SUCCESS' })
+              
+            history.push('/app/dashboard')
+        return(
+          setError(true),
+          setIsLoading(false) 
+        )
+      }     
+  }catch(error) {
+    console.log("catch");
     dispatch({ type: "LOGIN_FAILURE" });
     setError(true);
-    setIsLoading(false);
+    setIsLoading(false) 
   }
 }
 
 function signOut(dispatch, history) {
-  localStorage.removeItem("id_token");
+  localStorage.removeItem("TOKEN");
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
 }
+
+export const isAuthenticated = () => {
+  if(typeof window == 'undefined') {
+      return false
+    }
+   if(localStorage.getItem("TOKEN")) {
+       return JSON.parse(localStorage.getItem('TOKEN'))
+       } else{
+           return false
+       }
+} 
+
+async function messageUser(contact, message, token) {
+  try{
+    const response = await fetch("http://localhost:4000/user/message", {
+            method: "POST",
+            headers: {
+            "Authorization" : `Bearer ${token}`,
+            "Content-Type": "application/json"
+              },
+            body: JSON.stringify({contact: contact, message: message})
+          }).then(response => response.json()) ;
+
+          return response;
+    }catch(error){
+        console.log(error);
+  } 
+}
+
+
+export { UserProvider, useUserState, useUserDispatch,SignupUser, LoginUser, signOut, messageUser };

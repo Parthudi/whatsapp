@@ -20,7 +20,8 @@ import logo from "./logo.svg";
 import google from "../../images/google.svg";
 
 // context
-import { useUserDispatch, loginUser } from "../../context/UserContext";
+import { useUserDispatch, LoginUser, SignupUser } from "../../context/UserContext";
+import Dashboard from "../dashboard/Dashboard"
 
 function Login(props) {
   var classes = useStyles();
@@ -29,24 +30,46 @@ function Login(props) {
   var userDispatch = useUserDispatch();
 
   // local
-  var [isLoading, setIsLoading] = useState(false);
-  var [error, setError] = useState(null);
-  var [activeTabId, setActiveTabId] = useState(0);
-  var [nameValue, setNameValue] = useState("");
-  var [loginValue, setLoginValue] = useState("admin@gmail.com");
-  var [passwordValue, setPasswordValue] = useState("password");
-  var [roleValue , setRoleValue] = useState("")
-  var [companyValue, setCompanyValue] = useState("")
-  var [forgotEmailValue, setforgotEmailValue] = useState("")
-  var [forgotPasswordValue, setforgotPasswordValue] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [activeTabId, setActiveTabId] = useState(0);
+  const [nameValue, setNameValue] = useState("");
+  const [emailValue, setEmailValue] = useState("parmarparth597@gmail.com");
+  const [passwordValue, setPasswordValue] = useState("parthudi");
+  const [signupEmailValue, setSignupEmailValue] = useState("");
+  const [signuppasswordValue, setSignupPasswordValue] = useState("");
+  const [roleValue , setRoleValue] = useState("")
+  const [companyValue, setCompanyValue] = useState("")
+  const [forgotEmailValue, setForgotEmailValue] = useState("")
+  const [forgotPasswordValue, setForgotPasswordValue] = useState("")
+  const [visitUsers, setVisitUsers] = useState(0);
 
-  
+  // const onClickHandler = (userDispatch,emailValue,passwordValue) => {
+  //     LoginUser(userDispatch,emailValue,passwordValue).then((err, data) => {
+  //       if(err){
+  //          console.log("Error : " +data.error);
+  //          setError(true);
+  //          setIsLoading(false);
+  //       }else{
+  //          setError(true);
+  //          setIsLoading(false);
+  //          setVisitUsers(visitUsers + 1);
+  //          console.log(visitUsers);
+  //         <Dashboard visitedUsers={visitUsers} />;
+  //          localStorage.setItem('TOKEN', JSON.stringify(data));
+  //          props.history.push('/app/dashboard')
+  //       }
+  //     })
+  //  }
+
   return (
+    <React.Fragment>
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
         <Typography className={classes.logotypeText}>  Admin  </Typography>
       </div>
+
       <div className={classes.formContainer}>
         <div className={classes.form}>
           <Tabs
@@ -59,6 +82,8 @@ function Login(props) {
             <Tab label="Login" classes={{ root: classes.tab }} />
             <Tab label="New User" classes={{ root: classes.tab }} />
           </Tabs>
+
+         {/* //////////////////////LOGIN///////////////////////   */}
           {activeTabId === 0 && (
             <React.Fragment>
               {new Date().getHours() <= 12 ? 
@@ -68,7 +93,7 @@ function Login(props) {
               (
                 new Date().getHours() > 12 && new Date().getHours() <= 17 ?
                 <Typography variant="h1" className={classes.greeting}>
-                     Good Afternoon, User 
+                  Good Afternoon, User 
                 </Typography>       :
                 <Typography variant="h1" className={classes.greeting}>
                  Good Evening, User 
@@ -88,8 +113,8 @@ function Login(props) {
                     input: classes.textField,
                   },
                 }}
-                value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                value={emailValue}
+                onChange={e => setEmailValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -114,26 +139,25 @@ function Login(props) {
                 {isLoading ? (
                   <CircularProgress size={26} className={classes.loginLoader} />
                 ) : (
-                  <Button
-                    disabled={
-                      loginValue.length === 0 || passwordValue.length === 0
-                    }
-                    onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
-                    }
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                  >
-                    Login
-                  </Button>
+                    <Button
+                      disabled={
+                        emailValue.length === 0 || passwordValue.length === 0
+                      }
+                      onClick={() =>
+                        LoginUser(
+                          userDispatch,
+                          emailValue,
+                          passwordValue,
+                          props.history,
+                          setIsLoading,
+                          setError,
+                        )
+                      }
+                      variant="contained"
+                      color="primary"
+                      size="large" >
+                      Login
+                    </Button>
                 )}
                 <Button
                   color="primary"
@@ -157,6 +181,7 @@ function Login(props) {
             </React.Fragment>
           )}
 
+        {/* ///////////////////Signup///////////////////// */}
           {activeTabId === 1 && (
             <React.Fragment>
               <Typography variant="h1" className={classes.greeting}>
@@ -193,8 +218,8 @@ function Login(props) {
                     input: classes.textField,
                   },
                 }}
-                value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                value={signupEmailValue}
+                onChange={e => setSignupEmailValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -208,8 +233,8 @@ function Login(props) {
                     input: classes.textField,
                   },
                 }}
-                value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                value={signuppasswordValue}
+                onChange={e => setSignupPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
@@ -252,17 +277,20 @@ function Login(props) {
                 ) : (
                   <Button
                     onClick={() =>
-                      loginUser(
+                      SignupUser(
                         userDispatch,
-                        loginValue,
-                        passwordValue,
+                        nameValue,
+                        signupEmailValue,
+                        signuppasswordValue,
+                        roleValue,
+                        companyValue,
                         props.history,
                         setIsLoading,
                         setError,
                       )
                     }
                     disabled={
-                      loginValue.length === 0 ||
+                      signupEmailValue.length === 0 ||
                       passwordValue.length === 0 ||
                       nameValue.length === 0 ||
                       roleValue.length === 0 ||
@@ -296,6 +324,7 @@ function Login(props) {
             </React.Fragment>
           )}
 
+      {/* ////////////////////////// FORGET PASSWORD /////////////////////////// */}
       {activeTabId === 2 && (
             <React.Fragment>
               <Typography variant="h2" className={classes.subGreeting}>
@@ -316,7 +345,7 @@ function Login(props) {
                   },
                 }}
                 value={forgotEmailValue}
-                onChange={e => setforgotEmailValue(e.target.value)}
+                onChange={e => setForgotEmailValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -331,8 +360,8 @@ function Login(props) {
                     input: classes.textField,
                   },
                 }}
-                value={forgotPasswordValue}
-                onChange={e => setforgotPasswordValue(e.target.value)}
+                value={forgotEmailValue}
+                onChange={e => setForgotPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
@@ -345,10 +374,10 @@ function Login(props) {
                 ) : (
                   <Button
                     onClick={() =>
-                      loginUser(
+                      LoginUser(
                         userDispatch,
-                        loginValue,
-                        passwordValue,
+                        forgotEmailValue,
+                        forgotPasswordValue,
                         props.history,
                         setIsLoading,
                         setError,
@@ -378,6 +407,7 @@ function Login(props) {
         </Typography>
       </div>
     </Grid>
+    </React.Fragment>
   );
 }
 
