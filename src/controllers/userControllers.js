@@ -1,6 +1,8 @@
 const User = require('../models/userModel')
+const Company = require("../models/companyModel")
 const {Client} = require("whatsapp-web.js");
 const client = new Client();
+const whatsappClient = {};
 
 exports.findUserId= async (req, res, next, id) => {
     const user = await User.findById(id)
@@ -45,10 +47,11 @@ exports.signupUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const user = await User.findUserCredientials(req.body.email, req.body.password)
-
+        const company = await Company.findById(`${user.company}`)
+        const companyName = company.name;
         const token = await user.generateToken()
 
-        return res.status(200).send({user, token})
+        return res.status(200).send({user, token, companyName})
 
     }catch(error){
         if(!req.body.email) {
@@ -86,6 +89,14 @@ exports.read = async(req, res) => {
     try{
             console.log("inside users");
             const user = await User.find().select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+            // const company = await user.map(async(u) => {
+            //     const comp =  await Company.find({_id : `${u.company}`});
+            //     console.log("comp :" +comp);
+            //     return comp.name;
+            //    }) 
+            // // const company = await Company.findById("60b8804aa02b0439a0401fbb");
+            // await console.log("company : " +company);
+
             console.log("users : " +user);
             res.status(201).send({user})
     } catch(error) {
@@ -94,11 +105,10 @@ exports.read = async(req, res) => {
 }
 
 exports.update = async(req, res) => {
-     
     try{
-            const user = await User.findOneAndUpdate( {_id: req.profile._id}, {$set: req.body}, {new: true, useFindAndModify: false})
+        const user = await User.findOneAndUpdate( {_id: req.profile._id}, {$set: req.body}, {new: true, useFindAndModify: false})
 
-            res.status(201).send(user)
+        res.status(201).send(user)
     } catch(error) {
         res.status(401).send(error)
     }
@@ -116,6 +126,90 @@ exports.remove = async(req, res) => {
     }
 }
 
+exports.userContacts = async(req, res) => {
+    try{
+            console.log("inside userContacts");
+
+            const user = await User.find().select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+            // const company = await user.map(async(u) => {
+            //     const comp =  await Company.find({_id : `${u.company}`});
+            //     console.log("comp :" +comp);
+            //     return comp.name;
+            //    }) 
+            // // const company = await Company.findById("60b8804aa02b0439a0401fbb");
+            // await console.log("company : " +company);
+
+            console.log("users : " +user);
+            res.status(201).send({user})
+    } catch(error) {
+        res.status(401).send(error)
+    }
+}
+
+exports.autnenticationMessage = async(req, res) => {
+    try {
+        console.log("Checking Auth");
+
+    if (whatsappClient.newClient) {
+            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
+            await res.status(200).send("client is authenticated");
+      }else {
+        client.on('authenticated', (session) => {
+            whatsappClient.newClient = session;
+         });
+        
+       if(whatsappClient.newClient == null || undefined) {
+        client.on("qr", async(qr) => {
+            console.log("QR RECEIVED : " +qr);
+            await res.status(200).send(JSON.stringify(qr));
+        });
+       }
+        
+    client.on("ready", () => {
+        const start = (client)  => {
+                };
+        start(client);
+        });
+        client.initialize();
+    }
+  } catch(error) {
+        res.status(400).send("error:" +error.message);
+    }
+}
+
+exports.autnenticationMessage = async(req, res) => {
+    try {
+        console.log("Checking Auth");
+
+    if (whatsappClient.newClient) {
+            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
+            await res.status(200).send({user :"User Is Authenticated"});
+      }else {
+        client.on('authenticated', (session) => {
+            whatsappClient.newClient = session;
+         });
+        
+       if(whatsappClient.newClient == null || undefined) {
+        client.on("qr", async(qr) => {
+            console.log("QR RECEIVED : " +qr);
+            await res.status(200).send(JSON.stringify(qr));
+        });
+       }
+        
+    client.on("ready", async() => {
+        console.log("client is ready");
+        const start = (client)  => {
+                };
+        start(client);
+        });
+        client.initialize();
+    }
+  } catch(error) {
+        res.status(400).send("error:" +error.message);
+    }
+}
+
+
 exports.message = async(req, res) => {
     try {
         console.log("entering sendMessage");
@@ -130,38 +224,65 @@ exports.message = async(req, res) => {
         console.log("older array  : " +arr);
         console.log("messageToSend : " +text);
 
-    // let session_file;
-    // if (fs.existsSync(`./${contacts}.json`)) {
-    //     session_file = require(`./${contacts}.json`);
-    //     console.log("session_file", session_file);
-    //     }
-    client.on("qr", async(qr) => {
-        console.log("QR RECEIVED : " +qr);
-        await res.status(200).send(JSON.stringify(qr));
-    });
+    if (whatsappClient.newClient) {
+            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
+            // console.log("client  : " +JSON.stringify(client));
 
-    client.on("ready", () => {
-        console.log("client is ready");
+                const start = (client)  => {
+                    console.log("start client");
+                        const accurateData = contacts.indexOf(",");
+                        console.log("accurate : " +accurateData);
+                        if(accurateData == -1){
+                            // const chatId = contacts.substring(1) + "@c.us";      
+                        contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
+                        }else{
+                            arr.forEach(elem => {
+                            console.log("array : " +elem);
+                                elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
+                                });
+                            }
+                        };
+                start(client);
+                // client.initialize();
+                await res.status(200).send({message : "Message Sent"});
+      }else {
+          console.log("entering else part ");
 
-        const start = (client)  => {
-            console.log("start client");
-                const accurateData = contacts.indexOf(",");
-                console.log("accurate : " +accurateData);
-                if(accurateData == -1){
-                    // const chatId = contacts.substring(1) + "@c.us";      
-                contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
-                }else{
-                    arr.forEach(elem => {
-                    console.log("array : " +elem);
-                        elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
-                        });
-                    }
-                };
-        start(client);
-        });
-        client.initialize();
 
-    } catch(error) {
+        // client.on('authenticated', (session) => {
+        //     whatsappClient.newClient = session;
+        //  });
+        
+    //    if(whatsappClient.newClient == null || undefined) {
+    //     client.on("qr", async(qr) => {
+    //         console.log("QR RECEIVED : " +qr);
+    //         await res.status(200).send(JSON.stringify(qr));
+    //     });
+    //    }
+        
+    // client.on("ready", () => {
+    //     console.log("client is ready");
+
+    //     const start = (client)  => {
+    //         console.log("start client");
+    //             const accurateData = contacts.indexOf(",");
+    //             console.log("accurate : " +accurateData);
+    //             if(accurateData == -1){
+    //                 // const chatId = contacts.substring(1) + "@c.us";      
+    //             contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
+    //             }else{
+    //                 arr.forEach(elem => {
+    //                 console.log("array : " +elem);
+    //                     elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
+    //                     });
+    //                 }
+    //             };
+    //     start(client);
+    //     });
+    //     client.initialize();
+        await res.status(200).send({message : "Please Scan the QR Code & then send any message"});
+    }
+  } catch(error) {
         res.status(400).send("error:" +error.message);
     }
 }

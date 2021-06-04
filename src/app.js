@@ -8,8 +8,8 @@ const cors = require('cors')
 
 //import Routes
 const userRouter = require('./routes/usersRoute')
-// const categoryRouter = require('./routes/categoryRoutes')
-// const productRouter = require('./routes/productRouter')
+const companyRouter = require('./routes/companyRoute')
+const contactRouter = require('./routes/contactRoute')
 
 const app = express()
 const port = process.env.PORT || 4000
@@ -22,8 +22,8 @@ app.use(cors())
 
 //Routes
 app.use(userRouter)
-// app.use(categoryRouter)
-// app.use(productRouter)
+app.use(companyRouter)
+app.use(contactRouter)
 
 app.listen(port , () => {
     console.log('server is running on port ' +port)

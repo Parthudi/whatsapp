@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bycrypt = require('bcrypt')
 const JWT = require('jsonwebtoken')
+const {ObjectId} = mongoose.Schema
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -50,8 +51,9 @@ const userSchema = new mongoose.Schema({
         default: 'user'
         },
     company: {
-        type: String,
-
+        type: ObjectId,                  
+        ref: 'company',                 
+        required: true
     },
     tokenze : [{
         token: {
