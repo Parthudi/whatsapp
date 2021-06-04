@@ -16,7 +16,7 @@ import { Typography } from "../../components/Wrappers/Wrappers";
 export default function MessagePage() {
   var classes = useStyles();
 
-  const {user, token} = isAuthenticated();
+  const {user, token, companyName} = isAuthenticated();
 
    // local
    var [isLoading, setIsLoading] = useState(false);
@@ -30,8 +30,8 @@ export default function MessagePage() {
       <PageTitle title="Profile" />
       <Grid container spacing={4} >
         
-        <Grid item xs={12} md={3}  >
-          <Widget title="USER PROFILE" disableWidgetMenu >
+        <Grid item md={3/7} >
+          <Widget title="USER PROFILE" disableWidgetMenu  >
                 <AccountIcon  className={classes.sizeOfFont} />
           </Widget>
         </Grid>
@@ -40,7 +40,7 @@ export default function MessagePage() {
           <Widget title="USER DETAILS" disableWidgetMenu>
             <div className={classes.dashedBorder} >
               <Typography size="md"> Name  : {user.name}</Typography>
-              <Typography size="md"> Company : {user.company}</Typography>
+              <Typography size="md"> Company : {companyName}</Typography>
               <Typography size="md"> Role  : {user.role}</Typography>
               <Typography size="md"> Email : {user.email}</Typography>
             </div>

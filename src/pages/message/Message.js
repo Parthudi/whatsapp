@@ -1,9 +1,9 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { Grid ,TextField,  Button,
   CircularProgress,
-  Fade} from "@material-ui/core";
+  Fade,} from "@material-ui/core";
 import QRCode from "qrcode.react";
-
+// import QRReader from "react-qr-scanner";
 import { messageUser, isAuthenticated } from "../../context/UserContext";
 
 // styles
@@ -23,23 +23,80 @@ export default function MessagePage() {
    const [response, setResponse] = useState("");
    const [contactValue, setContactValue] = useState("");
    const [messageValue, setMessageValue] = useState("");
- 
+   const [showQr , setShowQr] = useState(true);
+   const [showMessage , setShowMessage] = useState("");
   const  {token} = isAuthenticated();
+  
+  // useEffect(async() => {
+  //   try{
+  //     setIsLoading(true);
+  //     const response = await fetch("http://localhost:4000/users/auth", {
+  //             method: "GET",
+  //             headers: {
+  //             "Authorization" : `Bearer ${token}`,
+  //             "Content-Type": "application/json"
+  //               }
+  //           }).then(res => res.json()) 
 
-  console.log("token : " +token);
-  const messageUserHandler = (contact, message) => {
-      messageUser(contact, message, token).then((response) => {
-          if(response.error) {
-            setError(true);
-            setIsLoading(false);
-           }else{
-             console.log("response : " +response);
-              setResponse(response);
-              setError(false);
-              setIsLoading(false);
-           }
-      })
+  //           setIsLoading(false);
+  //           setResponse(response);
+  //     }catch(error){
+  //         console.log(error);
+  //   } 
+  // }, []);
+
+  const QrCodeHandler = async() => {
+        try{
+          setIsLoading(true);
+          const response = await fetch("http://localhost:4000/users/auth", {
+                  method: "GET",
+                  headers: {
+                  "Authorization" : `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                    }
+                }).then(res => res.json()) 
+    
+                response.length > 1 ?  console.log("response of qrcodeHandler : " +response) : console.log("user authenticated")
+                response.length > 1 ? setResponse(response) : setResponse("User authenticated");
+                setIsLoading(false);
+                setShowQr(false);
+          }catch(error){
+              console.log(error);
+        } 
   }
+
+  const messageUserHandler = (contact, message) => {
+    try{
+      messageUser(contact, message, token).then((response) => {
+        console.log("response : " +response);
+        if(response.includes("Sent")) {
+          setResponse("");
+          setMessageValue("");
+          setError(false);
+          setShowMessage(response);
+
+          }else{
+              setMessageValue("");
+              setShowMessage(response);       
+          }
+
+        setTimeout(() => { 
+          setShowMessage("");
+          }, 4000);  
+    })
+        
+    }catch(error) {
+        setError(true);
+  }
+}
+
+// const showAuthMessage = () => {
+//   console.log("inside showAuthMessage");
+//   setTimeout(() => { 
+//        return response;
+//     }, 5000);
+//     setShowQr(false);
+// }
 
   return (
     <>
@@ -48,13 +105,21 @@ export default function MessagePage() {
         
         <Grid item xs={12} md={8}>
           <Widget title="SEND MESSAGE" disableWidgetMenu>
-
           <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
                     Please fill the credentials properly  :(
                 </Typography>
           </Fade>
 
+        { showQr ? 
+               <Button
+               onClick={QrCodeHandler}
+               variant="contained"
+               color="primary"
+               size="large"
+             >
+                Show QR Code 
+             </Button>  :
           <form className={classes.root} noValidate autoComplete="off">
           <TextField 
                 id="Contacts"
@@ -66,6 +131,7 @@ export default function MessagePage() {
                 }}
                 value={contactValue}
                 onChange={e => setContactValue(e.target.value)}
+                // disabled = {response.length > 1}
                 margin="normal"
                 placeholder="Contacts"
                 type="string"
@@ -81,6 +147,7 @@ export default function MessagePage() {
                 }}
                 value={messageValue}
                 onChange={e => setMessageValue(e.target.value)}
+                // disabled = {response.length > 1}
                 margin="normal"
                 placeholder="Message"
                 type="text"
@@ -88,17 +155,14 @@ export default function MessagePage() {
               />
 
             <div className={classes.formButtons}>
-                {isLoading ? (
-                  <CircularProgress size={26} className={classes.loginLoader} />
-                ) : (
                   <Button
                     disabled={
-                      contactValue.length <= 9  || messageValue.length === 0
+                      contactValue.length <= 9  || messageValue.length === 0 
                     }
                     onClick={() =>
                       messageUserHandler(
                         contactValue,
-                        messageValue,
+                        messageValue
                       )
                     }
                     variant="contained"
@@ -107,18 +171,26 @@ export default function MessagePage() {
                   >
                      Send 
                   </Button>
-                )}
+                {showMessage.length > 15 ? 
+                       <Typography color="secondary" noWrap>
+                          {showMessage}
+                       </Typography>   :
+
+                        <Typography color="primary" noWrap>
+                        {showMessage}
+                    </Typography> }
+
               </div>
-          </form>
-  
+          </form>  } 
           </Widget>
         </Grid>
 
         <Grid item xs={12} md={4}>
           <Widget title="QR CODE GENERATOR" disableWidgetMenu>
             <div className={classes.dashedBorder}>
-               {response ? <QRCode value={response} size={256} /> : null} 
+              {isLoading ? <CircularProgress color="secondary" /> : ( response.length >= 25 ? <QRCode value={response} size={256} />  : (<Typography color="secondary"> {response.user} </Typography> )  ) } 
             </div>
+            
           </Widget>
         </Grid>
       </Grid>

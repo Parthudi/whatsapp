@@ -20,8 +20,7 @@ import logo from "./logo.svg";
 import google from "../../images/google.svg";
 
 // context
-import { useUserDispatch, LoginUser, SignupUser } from "../../context/UserContext";
-import Dashboard from "../dashboard/Dashboard"
+import { useUserDispatch, LoginUser, SignupUser, SignupCompany } from "../../context/UserContext";
 
 function Login(props) {
   var classes = useStyles();
@@ -33,16 +32,25 @@ function Login(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTabId, setActiveTabId] = useState(0);
-  const [nameValue, setNameValue] = useState("");
+  
+  // const [nameValue, setNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("parmarparth597@gmail.com");
-  const [passwordValue, setPasswordValue] = useState("parthudi");
-  const [signupEmailValue, setSignupEmailValue] = useState("");
-  const [signuppasswordValue, setSignupPasswordValue] = useState("");
-  const [roleValue , setRoleValue] = useState("")
-  const [companyValue, setCompanyValue] = useState("")
+  const [passwordValue, setPasswordValue] = useState("parthu");
+  // const [signupEmailValue, setSignupEmailValue] = useState("");
+  // const [signuppasswordValue, setSignupPasswordValue] = useState("");
+  // const [roleValue , setRoleValue] = useState("")
+  // const [companyValue, setCompanyValue] = useState("")
+
   const [forgotEmailValue, setForgotEmailValue] = useState("")
   const [forgotPasswordValue, setForgotPasswordValue] = useState("")
-  const [visitUsers, setVisitUsers] = useState(0);
+
+  // const [companyName, setCompanyName] = useState("Vistaura")
+  // const [address1, setAddress1] = useState("202-A avadh residency")
+  // const [address2, setAddress2] = useState(" in yoginagar township")
+  // const [state, setState] = useState("gujarat")
+  // const [city, setCity] = useState("vadodara")
+  // const [pincode, setPincode] = useState("390002")
+  // const [gstin, setGstin] = useState("7865452")
 
   // const onClickHandler = (userDispatch,emailValue,passwordValue) => {
   //     LoginUser(userDispatch,emailValue,passwordValue).then((err, data) => {
@@ -67,7 +75,7 @@ function Login(props) {
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>  Admin  </Typography>
+        <Typography className={classes.logotypeText}>  USERS  </Typography>
       </div>
 
       <div className={classes.formContainer}>
@@ -80,7 +88,6 @@ function Login(props) {
             centered
           >
             <Tab label="Login" classes={{ root: classes.tab }} />
-            <Tab label="New User" classes={{ root: classes.tab }} />
           </Tabs>
 
          {/* //////////////////////LOGIN///////////////////////   */}
@@ -181,151 +188,8 @@ function Login(props) {
             </React.Fragment>
           )}
 
-        {/* ///////////////////Signup///////////////////// */}
-          {activeTabId === 1 && (
-            <React.Fragment>
-              <Typography variant="h1" className={classes.greeting}>
-                Welcome!
-              </Typography>
-              <Typography variant="h2" className={classes.subGreeting}>
-                Create your account
-              </Typography>
-              <Fade in={error}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
-                </Typography>
-              </Fade>
-              <TextField
-                id="name"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={nameValue}
-                onChange={e => setNameValue(e.target.value)}
-                margin="normal"
-                placeholder="Full Name"
-                type="text"
-                fullWidth
-              />
-              <TextField
-                id="email"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={signupEmailValue}
-                onChange={e => setSignupEmailValue(e.target.value)}
-                margin="normal"
-                placeholder="Email Adress"
-                type="email"
-                fullWidth
-              />
-              <TextField
-                id="password"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={signuppasswordValue}
-                onChange={e => setSignupPasswordValue(e.target.value)}
-                margin="normal"
-                placeholder="Password"
-                type="password"
-                fullWidth
-              />
-              <TextField
-                id="role"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={roleValue}
-                onChange={e => setRoleValue(e.target.value)}
-                margin="normal"
-                placeholder="Role"
-                type="text"
-                fullWidth
-              />
-              <TextField
-                id="company"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={companyValue}
-                onChange={e => setCompanyValue(e.target.value)}
-                margin="normal"
-                placeholder="Company"
-                type="text"
-                fullWidth
-              />
-        
-              <div className={classes.creatingButtonContainer}>
-                {isLoading ? (
-                  <CircularProgress size={26} />
-                ) : (
-                  <Button
-                    onClick={() =>
-                      SignupUser(
-                        userDispatch,
-                        nameValue,
-                        signupEmailValue,
-                        signuppasswordValue,
-                        roleValue,
-                        companyValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
-                    }
-                    disabled={
-                      signupEmailValue.length === 0 ||
-                      passwordValue.length === 0 ||
-                      nameValue.length === 0 ||
-                      roleValue.length === 0 ||
-                      roleValue === "user" ? companyValue.length === 0 : null
-                    }
-                    size="large"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    className={classes.createAccountButton}
-                  >
-                    Create your account
-                  </Button>
-                )}
-              </div>
-              <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
-              </div>
-              <Button
-                size="large"
-                className={classnames(
-                  classes.googleButton,
-                  classes.googleButtonCreating,
-                )}
-              >
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
-            </React.Fragment>
-          )}
-
       {/* ////////////////////////// FORGET PASSWORD /////////////////////////// */}
-      {activeTabId === 2 && (
+      {activeTabId === 3 && (
             <React.Fragment>
               <Typography variant="h2" className={classes.subGreeting}>
                 Forgot your account ? 

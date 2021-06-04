@@ -34,6 +34,9 @@ import Users from "../../pages/users/Users";
 import Icons from "../../pages/icons";
 import Charts from "../../pages/charts";
 import Profile from "../../pages/profile/profile"
+import UserRegister from "../../pages/users/UserRegister"
+import CompanyRegister from "../../pages/users/CompanyRegister"
+import AddContacts from "../../pages/contacts/addContact"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -60,6 +63,9 @@ function Layout(props) {
               <Route path="/app/dashboard" component={Dashboard} />
               <Route path="/app/message" component={Message} />
               <Route path="/app/users" component={Users} />
+              <Route path="/app/user/register" component={UserRegister} />
+              <Route path="/app/company/register" component={CompanyRegister} />
+              <Route path="/app/contact/register" component={AddContacts} />
               <Route path="/app/notifications" component={Notifications} />
               <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
               <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />

@@ -4,6 +4,7 @@ var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
 
 function userReducer(state, action) {
+  console.log("action : " +action.type);
   switch (action.type) {
     case "REGISTER_FAILURE":
       return { ...state, error: true, isAuthenticated: false};
@@ -20,10 +21,11 @@ function userReducer(state, action) {
 }
 
 function UserProvider({ children }) {
-  const error = "Fill the correct details only!";
+  const err = "Fill the correct details only!";
+  
   var [state, dispatch] = React.useReducer(userReducer, {
       isAuthenticated: !!localStorage.getItem("TOKEN"),
-      error: !!error
+      error: !!err
   });
 
   return (
@@ -53,6 +55,29 @@ function useUserDispatch() {
 
 // ###########################################################
 
+async function SignupCompany(dispatch, name, address1 ,address2, state, city, pincode, gstin, history, setIsLoading, setError) {
+  setError(false);
+  setIsLoading(true);
+
+  if ( !!name && !!address1 && !!state && !!city && !!pincode && !!gstin ) {
+       await fetch(`http://localhost:4000/company/signup`,{
+              method: "POST",
+              headers: {
+                        Accept:  "application/json",
+                      "Content-Type": "application/json"
+              },
+              body: JSON.stringify({name,address1,address2,state,city,pincode,gstin})
+            }).then(response => response.json());
+
+          setIsLoading(false);
+          history.push("/app/users");
+  }else{
+          dispatch({ type: 'REGISTER_FAILURE' });
+          setError(true)
+          setIsLoading(false) 
+  }
+}
+
 async function SignupUser(dispatch, name, email ,password, role, company, history, setIsLoading, setError) {
   setError(false);
   setIsLoading(true);
@@ -68,7 +93,7 @@ async function SignupUser(dispatch, name, email ,password, role, company, histor
             }).then(response => response.json());
 
           setIsLoading(false);
-          history.push("/login");
+          history.push("/app/users");
   }else{
           dispatch({ type: 'REGISTER_FAILURE' });
           setError(true)
@@ -140,13 +165,15 @@ async function messageUser(contact, message, token) {
             "Content-Type": "application/json"
               },
             body: JSON.stringify({contact: contact, message: message})
-          }).then(response => response.json()) ;
+          }).then(res => res.json()) ;
 
-          return response;
+          console.log("response at messageUser : " +response.message);
+
+          return response.message;
     }catch(error){
         console.log(error);
   } 
 }
 
 
-export { UserProvider, useUserState, useUserDispatch,SignupUser, LoginUser, signOut, messageUser };
+export { UserProvider, useUserState, useUserDispatch,SignupUser,SignupCompany, LoginUser, signOut, messageUser };

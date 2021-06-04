@@ -39,7 +39,7 @@ export default makeStyles(theme => ({
     },
   },
   formContainer: {
-    width: "40%",
+    width: "50%",
     height: "100%",
     display: "flex",
     flexDirection: "column",
@@ -50,7 +50,7 @@ export default makeStyles(theme => ({
     },
   },
   form: {
-    width: 400,
+    width: 500,
   },
   tab: {
     fontWeight: 350,

@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from "react";
-import { Grid} from "@material-ui/core";
+import { Grid, Button} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import MUIDataTable from "mui-datatables";
 import {
@@ -12,6 +12,7 @@ import Table from "../dashboard/components/Table/Table";
 import {isAuthenticated} from "../../context/UserContext"
 // data
 import mock from "../dashboard/mock";
+import { propTypes } from "qrcode.react";
 
 // const datatableData = [
 //   [ "Vistaura", "Joe James", "parth@gmail.com",  "User", "16:25", "19:35", <EditIcon/> ],
@@ -40,10 +41,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Tables = () => {
+const Tables = (props) => {
 
 const [dataa, setDataa] = useState([]);
-
+const [companyDataa, setCompanyDataa] = useState([]);
 const {token} = isAuthenticated();
 
   const usersData = () => {
@@ -52,7 +53,7 @@ const {token} = isAuthenticated();
         headers: {
         "Authorization" : `Bearer ${token}`
           }
-      }).then(res => res.json()).then(resp => setDataa(resp.user))
+      }).then(res => res.json()).then(resp => (setDataa(resp.user), setCompanyDataa(resp.company) ))
   }
 
 useEffect(() => { 
@@ -70,13 +71,34 @@ useEffect(() => {
       let datatableData = [];
       dataa.forEach(element => {
         datatableData.push([
-            [`${element.role}`] , [`${element.name}`], [`${element.email}`], [`${element.company}`], [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
+          [`${element.company}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
           ])}) 
-      const columns = ["Role", "Name", "Email", "Company" , "Created At", "Modified At", "Edit"]; 
-       
+      const columns = ["Company" , "Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
+      
+      const addUserHandler = () => {
+          props.history.push("/app/user/register");
+      }
+
+      const addCompanyHandler = () => {
+        props.history.push("/app/company/register");
+    }
   return (
     <>
       <PageTitle title="Users" />
+      <Button
+          onClick={addUserHandler}
+          variant="contained"
+          color="primary"
+          size="large" >
+          Add User 
+      </Button>
+      <Button
+          onClick={addCompanyHandler}
+          variant="contained"
+          color="secondary"
+          size="large" >
+          Add Company 
+      </Button>
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <MUIDataTable

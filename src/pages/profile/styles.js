@@ -11,8 +11,9 @@ export default makeStyles(theme => ({
     paddingBottom: theme.spacing(3),
   },
   sizeOfFont: {
-     fontSize : "200px",
-     padding: theme.spacing(2),
+      fontSize : "200px",
+      justifyContent: 'center',
+      alignItems: 'center',
   },
   text: {
     marginBottom: theme.spacing(5),
