@@ -55,12 +55,9 @@ function useUserDispatch() {
 
 // ###########################################################
 
-async function SignupCompany(dispatch, name, address1 ,address2, state, city, pincode, gstin, history, setIsLoading, setError) {
-  setError(false);
-  setIsLoading(true);
-
-  if ( !!name && !!address1 && !!state && !!city && !!pincode && !!gstin ) {
-       await fetch(`http://localhost:4000/company/signup`,{
+async function SignupCompany(name, address1 ,address2, state, city, pincode, gstin) {
+  try {
+      const response = await fetch(`http://localhost:4000/company/signup`,{
               method: "POST",
               headers: {
                         Accept:  "application/json",
@@ -69,37 +66,30 @@ async function SignupCompany(dispatch, name, address1 ,address2, state, city, pi
               body: JSON.stringify({name,address1,address2,state,city,pincode,gstin})
             }).then(response => response.json());
 
-          setIsLoading(false);
-          history.push("/app/users");
-  }else{
-          dispatch({ type: 'REGISTER_FAILURE' });
-          setError(true)
-          setIsLoading(false) 
+            return response;
+
+  }catch(error){
+          console.log(error.message)
+          return {error : error.message};
   }
 }
 
-async function SignupUser(dispatch, name, email ,password, role, company, history, setIsLoading, setError) {
-  setError(false);
-  setIsLoading(true);
-
-  if ( !!name && !!email && !!password && !!role ) {
-       await fetch(`http://localhost:4000/user/signup`,{
+async function SignupUser(name, email, password, role, company) {
+    try{
+      const response = await fetch(`http://localhost:4000/user/signup`,{
               method: "POST",
               headers: {
                         Accept:  "application/json",
                       "Content-Type": "application/json"
               },
-              body: JSON.stringify({name,email,password,role, company})
+              body: JSON.stringify({name, email, password, role, company})
             }).then(response => response.json());
-
-          setIsLoading(false);
-          history.push("/app/users");
-  }else{
-          dispatch({ type: 'REGISTER_FAILURE' });
-          setError(true)
-          setIsLoading(false) 
-  }
-}
+            return response;
+        } catch(error) {
+          console.log(error.message);
+          return {error : error.message};
+        }
+      }
 
 async function LoginUser(dispatch, email, password, history, setIsLoading, setError) {
   setError(false);
@@ -156,6 +146,62 @@ export const isAuthenticated = () => {
        }
 } 
 
+export const GroupRegistration = async(contacts, name, user, token) => {
+  try{
+    const response = await fetch(`http://localhost:4000/group/signup`,{
+          method: "POST",
+          headers: {
+                  "Authorization" : `${token}`,
+                  "Content-Type": "application/json"
+          },
+          body: JSON.stringify({user, name, contacts})
+        }).then(response => response.json());
+
+        return response;
+  }catch(error) {
+    console.log(error.message);
+    return {error : error.message}
+  }
+}
+
+export const messageGroup = async(group, message, token) => {
+  try{
+    const response = await fetch(`http://localhost:4000/group/message`,{
+          method: "POST",
+          headers: {
+                  "Authorization" : `Bearer ${token}`,
+                  "Content-Type": "application/json"
+          },
+          body: JSON.stringify({group, message})
+        }).then(res => res.json());
+
+        console.log("response : " +response.message);
+        return response.message;
+  }catch(error) {
+    console.log(error.message);
+    return {error : error.message}
+  }
+}
+
+export const messageAllUsers = async(message, company_id, token) => {
+  try{
+    const response = await fetch(`http://localhost:4000/contact/message`,{
+          method: "POST",
+          headers: {
+                  "Authorization" : `Bearer ${token}`,
+                  "Content-Type": "application/json"
+          },
+          body: JSON.stringify({company_id, message})
+        }).then(res => res.json());
+
+        console.log("response : " +response.message);
+        return response.message;
+  }catch(error) {
+    console.log(error.message);
+    return {error : error.message}
+  }
+}
+
 async function messageUser(contact, message, token) {
   try{
     const response = await fetch("http://localhost:4000/user/message", {
@@ -174,6 +220,8 @@ async function messageUser(contact, message, token) {
         console.log(error);
   } 
 }
+
+
 
 
 export { UserProvider, useUserState, useUserDispatch,SignupUser,SignupCompany, LoginUser, signOut, messageUser };

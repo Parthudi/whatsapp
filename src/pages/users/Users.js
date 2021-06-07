@@ -34,7 +34,6 @@ import { propTypes } from "qrcode.react";
 //   [ "Vistaura", "Gaston Festus", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
 // ];
 
-
 const useStyles = makeStyles(theme => ({
   tableOverflow: {
     overflow: 'auto'
@@ -60,19 +59,16 @@ useEffect(() => {
     usersData();
       }, []);
 
+const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
+
   const classes = useStyles();
       console.log(dataa);
-      // console.log(dataa[0].name);
-      // console.log(dataa[0].email);
-      // console.log(dataa[0].company);
-      // console.log(dataa[0].createdAt);
-      // console.log(dataa[0].modifiedAt);
 
       let datatableData = [];
       dataa.forEach(element => {
         datatableData.push([
           [`${element.company}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
-          ])}) 
+          ]) }) 
       const columns = ["Company" , "Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
       
       const addUserHandler = () => {
@@ -92,13 +88,13 @@ useEffect(() => {
           size="large" >
           Add User 
       </Button>
-      <Button
+     {isAuth.user.role === "admin" ?  <Button
           onClick={addCompanyHandler}
           variant="contained"
           color="secondary"
           size="large" >
           Add Company 
-      </Button>
+      </Button> : null }
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <MUIDataTable
@@ -110,11 +106,11 @@ useEffect(() => {
             }}
           />
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Widget title="Users List Sent By Email" upperTitle noBodyPadding bodyClass={classes.tableOverflow}>
             <Table data={mock.table} />
           </Widget>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );

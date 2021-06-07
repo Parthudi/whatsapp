@@ -49,12 +49,12 @@ const [companyDataa, setCompanyDataa] = useState([]);
 const {token} = isAuthenticated();
 
   const usersData = () => {
-     fetch("http://localhost:4000/user/contact",{
+     fetch("http://localhost:4000/contacts",{
         method: "GET",
         headers: {
         "Authorization" : `Bearer ${token}`
           }
-      }).then(res => res.json()).then(resp => (setDataa(resp.user)))
+      }).then(res => res.json()).then(resp => (setDataa(resp.contact)))
   }
 
 useEffect(() => { 
@@ -66,14 +66,19 @@ useEffect(() => {
 
       let datatableData = [];
       dataa.forEach(element => {
-        datatableData.push([
-          [`${element.company}`] 
-          ])}) 
-      const columns = ["Company_ID", "Contact", "Email"]; 
+        datatableData.push(
+          [`${element.company}` , `${element.email}`,  `${element.mobile_number}` , `${element.country_code}`] 
+          )
+        }) 
+      const columns = ["Company_ID", "Email" , "Mobile_Number" ,"Country_Code"]; 
     
     const addContactHandler = () => {
           props.history.push("/app/contact/register");
       }
+
+    const addGroupHandler = () => {
+      props.history.push("/app/group/register")
+    }
 
   return (
     <>
@@ -84,6 +89,13 @@ useEffect(() => {
           color="primary"
           size="large" >
           Add Contact 
+      </Button>
+      <Button
+          onClick={addGroupHandler}
+          variant="contained"
+          color="Secondary"
+          size="large" >
+          Create Group 
       </Button>
         <Grid item xs={12}>
             <MUIDataTable

@@ -26,7 +26,7 @@ import Sidebar from "../Sidebar";
 
 // pages
 import Dashboard from "../../pages/dashboard";
-import Message from "../../pages/message/Message";
+import Message from "../../pages/message/message";
 import Notifications from "../../pages/notifications";
 import Contacts from "../../pages/contacts/contacts"
 import Maps from "../../pages/maps";
@@ -37,6 +37,10 @@ import Profile from "../../pages/profile/profile"
 import UserRegister from "../../pages/users/UserRegister"
 import CompanyRegister from "../../pages/users/CompanyRegister"
 import AddContacts from "../../pages/contacts/addContact"
+import CreateGroups from "../../pages/contacts/createGroups"
+import PersonalMessage from "../../pages/message/personalMessage"
+import AllContacts from "../../pages/message/allContactMessage"
+import GroupMessage from "../../pages/message/groupMessage"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -47,6 +51,8 @@ function Layout(props) {
   // global
   var layoutState = useLayoutState();
   var userDispatch = useUserDispatch();
+
+const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   return (
     <div className={classes.root}>
@@ -61,11 +67,16 @@ function Layout(props) {
             <div className={classes.fakeToolbar} />
             <Switch>
               <Route path="/app/dashboard" component={Dashboard} />
-              <Route path="/app/message" component={Message} />
+              <Route path="/app/message" exact component={Message} />
+              <Route path="/app/message/personalmessage" exact component={PersonalMessage} />
+              <Route path="/app/message/groupmessage" exact component={GroupMessage} />
+              <Route path="/app/message/allcontacts" exact component={AllContacts} />
+
               <Route path="/app/users" component={Users} />
               <Route path="/app/user/register" component={UserRegister} />
-              <Route path="/app/company/register" component={CompanyRegister} />
+              {isAuth.user.role === "admin" ? <Route path="/app/company/register" component={CompanyRegister} /> : null }
               <Route path="/app/contact/register" component={AddContacts} />
+              <Route path="/app/group/register" component={CreateGroups} />
               <Route path="/app/notifications" component={Notifications} />
               <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
               <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />
@@ -88,73 +99,6 @@ function Layout(props) {
               alignItems={"center"}
               justifyContent="space-between"
             >
-              <div>
-                <Link
-                  color={'primary'}
-                  href={'https://flatlogic.com/'}
-                  target={'_blank'}
-                  className={classes.link}
-                >
-                  Flatlogic
-                </Link>
-                <Link
-                  color={'primary'}
-                  href={'https://flatlogic.com/about'}
-                  target={'_blank'}
-                  className={classes.link}
-                >
-                  About Us
-                </Link>
-                <Link
-                  color={'primary'}
-                  href={'https://flatlogic.com/blog'}
-                  target={'_blank'}
-                  className={classes.link}
-                >
-                  Blog
-                </Link>
-              </div>
-              <div>
-                <Link
-                  href={'https://www.facebook.com/flatlogic'}
-                  target={'_blank'}
-                >
-                  <IconButton aria-label="facebook">
-                    <Icon
-                      path={FacebookIcon}
-                      size={1}
-                      color="#6E6E6E99"
-                    />
-                  </IconButton>
-                </Link>
-                <Link
-                  href={'https://twitter.com/flatlogic'}
-                  target={'_blank'}
-                >
-                  <IconButton aria-label="twitter">
-                    <Icon
-                      path={TwitterIcon}
-                      size={1}
-                      color="#6E6E6E99"
-                    />
-                  </IconButton>
-                </Link>
-                <Link
-                  href={'https://github.com/flatlogic'}
-                  target={'_blank'}
-                >
-                  <IconButton
-                    aria-label="github"
-                    style={{marginRight: -12}}
-                  >
-                    <Icon
-                      path={GithubIcon}
-                      size={1}
-                      color="#6E6E6E99"
-                    />
-                  </IconButton>
-                </Link>
-              </div>
             </Box>
           </div>
         </>

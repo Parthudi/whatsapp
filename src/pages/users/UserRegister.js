@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   CircularProgress,
@@ -8,6 +8,9 @@ import {
   Tab,
   TextField,
   Fade,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 
@@ -26,43 +29,83 @@ function UserRegister(props) {
   // local
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [activeTabId, setActiveTabId] = useState(0);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role , setRole] = useState("")
-  const [company, setCompany] = useState("")
+  const [allcompany, setAllCompany] = useState([])
+  const [company, setCompany] = useState([])
+
+const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
+
+const companies = async() => {
+  const company = await fetch("http://localhost:4000/companies",{
+                  method: "GET",
+                  headers: {
+                        "Authorization": `${isAuth.token}`,
+                        "Content-Type": "application/json"
+                }
+              }).then(response => response.json());
+
+    // console.log("company : " +JSON.stringify(company));
+    setAllCompany(company);
+    setIsLoading(false);
+}
+
+useEffect(() => {
+    companies();
+  }, [])
+
+  const userSignup = async(name, email, password, role, company) => {
+    setIsLoading(true);
+    console.log("name : " +name);
+    console.log("email : " +email);
+    console.log("password : " +password);
+    console.log("role : " +role);
+    console.log("company : " +company);
+
+        await SignupUser(name, email, password, role, company).then(response => {
+        if(response.error) {
+            setError(response.error);
+            setIsLoading(false);
+        }else{
+          setCompany("");
+          setRole("");
+          setPassword("");
+          setEmail("");
+          setName("");
+          setError(false);
+          setIsLoading(false);
+        }
+    })
+  }
 
   return (
     <React.Fragment>
     <Grid container className={classes.container}>
       <div className={classes.formContainer}>
         <div className={classes.form}>
-          <Tabs
-            value={activeTabId}
-            onChange={(e, id) => setActiveTabId(id)}
-            indicatorColor="primary"
-            textColor="primary"
-            centered >
-
-            <Tab label="New User" classes={{ root: classes.tab }} />
-          </Tabs>      
-
+      
         {/* ///////////////////Signup User///////////////////// */}
-          {activeTabId === 0 && (
             <React.Fragment>
-              <Typography variant="h1" className={classes.greeting}>
-                Welcome!
-              </Typography>
               <Typography variant="h2" className={classes.subGreeting}>
-                Create your account
+                Create Account
               </Typography>
-              <Fade in={error}>
+              {error && error.length > 6 ? (
+                <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                    {error}
                 </Typography>
-              </Fade>
+              </Fade>    
+              )  : 
+                <Fade in={error}>
+                  <Typography color="secondary" className={classes.errorMessage}>
+                    Something is wrong with your login or password :(
+                  </Typography>
+                </Fade>
+              }
+              
               <TextField
                 id="name"
                 InputProps={{
@@ -108,53 +151,72 @@ function UserRegister(props) {
                 type="password"
                 fullWidth
               />
-              <TextField
-                id="role"
-                InputProps={{
+
+            {isAuth.user.role === "user" ? 
+               <div>
+               <InputLabel id="role"> Role </InputLabel>
+                 <Select labelId="role" id="role"  onChange={e => setRole(e.target.value)}   InputProps={{
+                   classes: {
+                     underline: classes.textFieldUnderline,
+                     input: classes.textField,
+                   },
+                 }}>
+                   <MenuItem value={isAuth.user.role} > {isAuth.user.role}  </MenuItem>
+                 </Select> 
+               </div>        :
+
+              <div>
+                <InputLabel id="role"> Role </InputLabel>
+                <Select labelId="role" id="role"  onChange={e => setRole(e.target.value)}   InputProps={{
                   classes: {
                     underline: classes.textFieldUnderline,
                     input: classes.textField,
                   },
-                }}
-                value={role}
-                onChange={e => setRole(e.target.value)}
-                margin="normal"
-                placeholder="Role"
-                type="text"
-                fullWidth
-              />
-              <TextField
-                id="company"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={company}
-                onChange={e => setCompany(e.target.value)}
-                margin="normal"
-                placeholder="Company"
-                type="text"
-                fullWidth
-              />
-        
+                }}>
+                  <MenuItem value="user" > User  </MenuItem>
+                  <MenuItem value="admin" > Admin  </MenuItem>
+                </Select> 
+              </div>
+            } <br/><br/>
+
+            {isAuth.user.role === "user" ?
+              <div>
+                <InputLabel id="company"> Company </InputLabel>
+                  <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}   InputProps={{
+                    classes: {
+                      underline: classes.textFieldUnderline,
+                      input: classes.textField,
+                    },
+                  }}>
+                    <MenuItem value={isAuth.user.company} > {isAuth.companyName}  </MenuItem>
+                  </Select> 
+                </div>  : 
+                  (  <div>
+                        <InputLabel id="company"> Company </InputLabel>
+                        <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}   InputProps={{
+                            classes: {
+                              underline: classes.textFieldUnderline,
+                              input: classes.textField,
+                            },
+                          }}>
+                          {allcompany && allcompany.map((comp, i) => {
+                            return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
+                          })}
+                        </Select> 
+                      </div> )
+                  }
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />
                 ) : (
                   <Button
                     onClick={() =>
-                      SignupUser(
-                        userDispatch,
+                      userSignup(
                         name,
                         email,
                         password,
                         role,
                         company,
-                        props.history,
-                        setIsLoading,
-                        setError,
                       )
                     }
                     disabled={
@@ -162,7 +224,7 @@ function UserRegister(props) {
                       password.length === 0 ||
                       name.length === 0 ||
                       role.length === 0 ||
-                     company.length === 0 
+                      company.length === 0 
                     }
                     size="large"
                     variant="contained"
@@ -174,11 +236,7 @@ function UserRegister(props) {
                   </Button>
                 )}
               </div>
-              <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
-              </div>
+             
               {/* <Button
                 size="large"
                 className={classnames(
@@ -190,7 +248,6 @@ function UserRegister(props) {
                 &nbsp;Sign in with Google
               </Button> */}
             </React.Fragment>
-          )}
 
         </div> <br></br>
         <Typography color="primary" className={classes.copyright}>
