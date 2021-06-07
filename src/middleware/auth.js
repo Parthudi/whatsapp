@@ -45,7 +45,8 @@ const isAuth = async(req, res, next) => {
 }
 
 const isAdmin = (req, res, next) => {
-    if(req.profile.role === 'user') {
+    console.log("req.user : " +req.user);
+    if(req.user === 'user') {
         
         throw new Error( 'Admin Resource Access denied!!' )
     }

@@ -16,12 +16,14 @@ exports.findUserId= async (req, res, next, id) => {
 
 exports.signupUser = async (req, res) => {
     try{     
+        console.log("user signup : " +JSON.stringify(req.body));
         const user = new User(req.body)
     
         await user.save()
         res.status(201).json({'user ' : user})
 
-      }catch(error){         
+      }catch(error){  
+        console.log(error);       
         if(!req.body.name) {
             res.status(401).json({error: 'Please enter Name'})
         }
@@ -146,36 +148,6 @@ exports.userContacts = async(req, res) => {
     }
 }
 
-exports.autnenticationMessage = async(req, res) => {
-    try {
-        console.log("Checking Auth");
-
-    if (whatsappClient.newClient) {
-            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
-            await res.status(200).send("client is authenticated");
-      }else {
-        client.on('authenticated', (session) => {
-            whatsappClient.newClient = session;
-         });
-        
-       if(whatsappClient.newClient == null || undefined) {
-        client.on("qr", async(qr) => {
-            console.log("QR RECEIVED : " +qr);
-            await res.status(200).send(JSON.stringify(qr));
-        });
-       }
-        
-    client.on("ready", () => {
-        const start = (client)  => {
-                };
-        start(client);
-        });
-        client.initialize();
-    }
-  } catch(error) {
-        res.status(400).send("error:" +error.message);
-    }
-}
 
 exports.autnenticationMessage = async(req, res) => {
     try {
@@ -223,6 +195,7 @@ exports.message = async(req, res) => {
         console.log("contactToSend : " +contacts);
         console.log("older array  : " +arr);
         console.log("messageToSend : " +text);
+
 
     if (whatsappClient.newClient) {
             console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));

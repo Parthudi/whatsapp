@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema
+const validator = require('validator')
 
 const contactSchema = new mongoose.Schema({
     company: {
@@ -8,11 +9,12 @@ const contactSchema = new mongoose.Schema({
         required: true
     },
     mobile_number: {
-        type: String,
+        type: Number,
         required: true,
           },
     country_code: {
         type: String,
+        required: true,
         default: +91
          },
     email: {

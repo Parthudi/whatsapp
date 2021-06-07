@@ -10,6 +10,7 @@ const cors = require('cors')
 const userRouter = require('./routes/usersRoute')
 const companyRouter = require('./routes/companyRoute')
 const contactRouter = require('./routes/contactRoute')
+const groupRouter = require("./routes/groupRoute")
 
 const app = express()
 const port = process.env.PORT || 4000
@@ -21,9 +22,10 @@ app.use(cookieParser())
 app.use(cors())
 
 //Routes
-app.use(userRouter)
-app.use(companyRouter)
-app.use(contactRouter)
+app.use(userRouter);
+app.use(companyRouter);
+app.use(contactRouter);
+app.use(groupRouter);
 
 app.listen(port , () => {
     console.log('server is running on port ' +port)
