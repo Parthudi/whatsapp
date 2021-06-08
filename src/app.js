@@ -3,6 +3,7 @@ require('./db/database')
 const morgon = require('morgan')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload');
 // const Auth =  require('./middleware/auth')
 const cors = require('cors')
 
@@ -20,12 +21,14 @@ app.use(morgon('dev'))      //just specifies routes in console like:- ( POST /si
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(cors())
+app.use(fileUpload({createParentPath: true}))
 
 //Routes
 app.use(userRouter);
 app.use(companyRouter);
 app.use(contactRouter);
 app.use(groupRouter);
+
 
 app.listen(port , () => {
     console.log('server is running on port ' +port)
