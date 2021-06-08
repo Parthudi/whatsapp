@@ -1,10 +1,5 @@
-import React, {useState, useEffect} from "react";
-import { Grid ,TextField,  Button,
-  CircularProgress,
-  Fade,} from "@material-ui/core";
-import QRCode from "qrcode.react";
-// import QRReader from "react-qr-scanner";
-import { messageUser, isAuthenticated } from "../../context/UserContext";
+import React from "react";
+import { Grid , Button} from "@material-ui/core";
 
 // styles
 import useStyles from "./styles";
@@ -12,7 +7,6 @@ import useStyles from "./styles";
 // components
 import PageTitle from "../../components/PageTitle/PageTitle";
 import Widget from "../../components/Widget/Widget";
-import { Typography } from "../../components/Wrappers/Wrappers";
 
 export default function MessagePage(props) {
   var classes = useStyles();
@@ -44,7 +38,7 @@ export default function MessagePage(props) {
                   variant="contained"
                   color="inherit"
                   size="large"  >
-                    Send Show QR Code 
+                    Send Message To All 
               </Button>   
           </Widget>
       </Grid>

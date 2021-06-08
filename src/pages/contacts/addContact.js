@@ -15,14 +15,8 @@ import { withRouter } from "react-router-dom";
 // styles
 import useStyles from "./styles";
 
-// context
-import { useUserDispatch, SignupUser } from "../../context/UserContext";
-
 function AddContacts(props) {
   var classes = useStyles();
-
-  // global
-  var userDispatch = useUserDispatch();
 
   // local
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +42,7 @@ function AddContacts(props) {
     console.log("contactRegister :" +contactRegister);
     setIsLoading(false);
     window.location.reload();
-    props.history.push("/app/contacts");
+    // props.history.push("/app/contacts");
   }
 
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
@@ -171,10 +165,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                             company,
                             mobile,
                             countrycode,
-                            email,
-                            props.history,
-                            setIsLoading,
-                            setError,
+                            email
                            )
                         }
                     disabled={

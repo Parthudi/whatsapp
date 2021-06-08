@@ -41,6 +41,7 @@ import CreateGroups from "../../pages/contacts/createGroups"
 import PersonalMessage from "../../pages/message/personalMessage"
 import AllContacts from "../../pages/message/allContactMessage"
 import GroupMessage from "../../pages/message/groupMessage"
+import UploadExcelSheet from "../../pages/contacts/uploadSheet"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -72,6 +73,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               <Route path="/app/message/groupmessage" exact component={GroupMessage} />
               <Route path="/app/message/allcontacts" exact component={AllContacts} />
 
+              <Route path="/app/contacts/addexcel" exact component={UploadExcelSheet} />
               <Route path="/app/users" component={Users} />
               <Route path="/app/user/register" component={UserRegister} />
               {isAuth.user.role === "admin" ? <Route path="/app/company/register" component={CompanyRegister} /> : null }
@@ -80,7 +82,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               <Route path="/app/notifications" component={Notifications} />
               <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
               <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />
-              <Route path="/app/contacts" component={Contacts} />
+              <Route path="/app/contacts" exact component={Contacts} />
               <Route path="/app/profile" component={Profile} />
 
               <Route
