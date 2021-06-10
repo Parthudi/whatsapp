@@ -19,6 +19,7 @@ const port = process.env.PORT || 4000
 //middlewares
 app.use(morgon('dev'))      //just specifies routes in console like:- ( POST /signup 201 time )
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({limit: "10mb", extended: true}));
 app.use(cookieParser())
 app.use(cors())
 app.use(fileUpload({createParentPath: true}))

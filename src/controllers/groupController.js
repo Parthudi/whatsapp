@@ -7,7 +7,30 @@ exports.signupGroup = async (req, res) => {
     try{     
         console.log("inside signup group");
         console.log(req.body)
-        const group = new Group(req.body)
+
+        const contacts = req.body.contacts;
+
+        let ids = "" ;
+            contacts.forEach((reqId, index) => {
+                if(index === 0) {
+                    ids += `${reqId}`;
+                }else{
+                    ids += `,${reqId}`;
+                }        
+            });
+            ids += "" ;
+        console.log(" id : " +ids);
+        console.log(" type of id : " +typeof ids);
+        const ContactNumbers = ids.toString(); 
+
+        let signUpData = {};
+        signUpData["user"] = req.body.user,
+        signUpData["name"] = req.body.name,
+        signUpData["contacts"] =  ContactNumbers,
+
+        console.log(JSON.stringify(signUpData));
+
+        const group = new Group(signUpData)
     
         await group.save()
         res.status(201).json({'group ' : group})
@@ -86,12 +109,24 @@ exports.message = async(req, res) => {
                     const accurateData = contacts.indexOf(",");
                     console.log("accurate : " +accurateData);
                         if(accurateData == -1){
-                            // const chatId = contacts.substring(1) + "@c.us";      
-                        contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
+                            console.log("single massage "); 
+                            if(elem.includes("+")){
+                                console.log("includes + ");
+                                const newElement = contacts.replace("+", "");
+                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+                                   }     
+                        contacts.length > response.length ? client.sendMessage(`${contacts}@c.us`, text) : null;
                         }else{
+                            console.log("multiple massage ");      
                             arr.forEach(elem => {
                             console.log("array : " +elem);
-                                elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
+                            if(elem.includes("+")){
+                                console.log("includes + ");
+                                const newElement = elem.replace("+", "");
+                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+                                   }else{
+                                    elem.length > response.length ? client.sendMessage(`${elem}@c.us`, text) : null;
+                                   }
                                 });
                             }
                         };

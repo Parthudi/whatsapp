@@ -14,7 +14,7 @@ route.post("/user/message" ,Auth,  message);
 route.patch('/user/update/:userid',Auth, isAuth, update )
 route.delete('/user/delete/:userid',Auth, isAuth, remove )
 
-route.get('/users',Auth, read)
+route.post('/users',Auth, read)
 route.get("/users/auth" , Auth, autnenticationMessage)
 route.get("/user/contact" ,Auth, userContacts);
 

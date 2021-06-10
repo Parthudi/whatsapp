@@ -90,17 +90,27 @@ exports.logoutUser = async (req, res) => {
 exports.read = async(req, res) => {
     try{
             console.log("inside users");
-            const user = await User.find().select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
-            // const company = await user.map(async(u) => {
-            //     const comp =  await Company.find({_id : `${u.company}`});
-            //     console.log("comp :" +comp);
-            //     return comp.name;
-            //    }) 
-            // // const company = await Company.findById("60b8804aa02b0439a0401fbb");
-            // await console.log("company : " +company);
+            const CompanyID = req.body.userCompanyID;
 
-            console.log("users : " +user);
-            res.status(201).send({user})
+            if(CompanyID === "admin") {
+                const user = await User.find().select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+                const nameOfCompany = user.map(async(u) => {
+                            const company = await Company.find({_id : u.company});
+                            const companyName = company.name;
+                            return companyName;
+                        })
+                console.log("users : " +user);
+                console.log("nameOfCompany : " +nameOfCompany);
+                res.status(201).send({user, nameOfCompany});
+            }else{
+                const user = await User.find({company : CompanyID}).select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+                const company = await Company.find({_id : CompanyID});
+                const companyName = company.name;
+                console.log("users : " +user);
+                res.status(201).send({user, companyName});
+
+            }
+            
     } catch(error) {
         res.status(401).send(error)
     }
@@ -206,12 +216,24 @@ exports.message = async(req, res) => {
                         const accurateData = contacts.indexOf(",");
                         console.log("accurate : " +accurateData);
                         if(accurateData == -1){
-                            // const chatId = contacts.substring(1) + "@c.us";      
-                        contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
+                            console.log("single massage "); 
+                            if(elem.includes("+")){
+                                console.log("includes + ");
+                                const newElement = contacts.replace("+", "");
+                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+                                   }     
+                        contacts.length > response.length ? client.sendMessage(`${contacts}@c.us`, text) : null;
                         }else{
+                            console.log("multiple massage ");      
                             arr.forEach(elem => {
                             console.log("array : " +elem);
-                                elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
+                            if(elem.includes("+")){
+                                console.log("includes + ");
+                                const newElement = elem.replace("+", "");
+                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+                                   }else{
+                                    elem.length > response.length ? client.sendMessage(`${elem}@c.us`, text) : null;
+                                   }
                                 });
                             }
                         };
