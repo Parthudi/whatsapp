@@ -3,7 +3,8 @@ import { Grid ,TextField,  Button,
   CircularProgress,
   Fade,} from "@material-ui/core";
 import QRCode from "qrcode.react";
-// import QRReader from "react-qr-scanner";
+import { Send as SendIcon } from "@material-ui/icons";
+
 import { messageUser, isAuthenticated } from "../../context/UserContext";
 
 // styles
@@ -170,6 +171,7 @@ export default function PersonalMessage() {
                     size="large"
                   >
                      Send 
+                     <SendIcon className={classes.sendButtonIcon} />
                   </Button>
                 {showMessage.length > 15 ? 
                        <Typography color="secondary" noWrap>

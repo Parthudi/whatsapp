@@ -1,12 +1,13 @@
 import React from "react";
-import { Grid , Button} from "@material-ui/core";
-
+import { Grid , Button, Fab} from "@material-ui/core";
+import { Send as SendIcon, Navigation as NavigationIcon } from "@material-ui/icons";
 // styles
 import useStyles from "./styles";
 
 // components
 import PageTitle from "../../components/PageTitle/PageTitle";
 import Widget from "../../components/Widget/Widget";
+
 
 export default function MessagePage(props) {
   var classes = useStyles();
@@ -15,31 +16,46 @@ export default function MessagePage(props) {
     <>
       <PageTitle title="Message" />
       
-        <Grid item xs={12} md={8}>
-          <Widget title="SEND MESSAGE" disableWidgetMenu>
-               <Button
-                  onClick={() => props.history.push("/app/message/personalmessage")}
-                  variant="contained"
-                  color="inherit"
-                  size="large" >
-                    Send Personal Message 
-                 </Button>  
+        <Grid item xs={12} md={12}>
+          <Widget  disableWidgetMenu>
+            <div className={classes.buttonBackground}>
+            <Fab
+              onClick={() => props.history.push("/app/message/personalmessage")}
+              variant="extended"
+              size="large"
+              color="primary"
+              aria-label="add"
+              className={classes.button}
+            >
+              <NavigationIcon className={classes.extendedIcon} />
+              Send Personal Message 
+            </Fab>
            
-                <Button
-                  onClick={() => props.history.push("/app/message/groupmessage")}
-                  variant="contained"
-                  color="default"
-                  size="large" >
-                    Send Group Message 
-              </Button>   
+              <Fab
+                onClick={() => props.history.push("/app/message/groupmessage")}
+                variant="extended"
+                size="large"
+                color="primary"
+                aria-label="add"
+                className={classes.button}
+              >
+                <NavigationIcon className={classes.extendedIcon} />
+                  Send Group Message 
+              </Fab>
            
-                <Button
-                  onClick={() => props.history.push("/app/message/allcontacts")}
-                  variant="contained"
-                  color="inherit"
-                  size="large"  >
-                    Send Message To All 
-              </Button>   
+              <Fab
+                onClick={() => props.history.push("/app/message/allcontacts")}
+                variant="extended"
+                size="large"
+                color="primary"
+                aria-label="add"
+                className={classes.button}
+               >
+                <NavigationIcon className={classes.extendedIcon} />
+                  Send Message To All 
+              </Fab>
+              
+            </div>   
           </Widget>
       </Grid>
     </>

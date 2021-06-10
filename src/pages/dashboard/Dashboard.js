@@ -1,58 +1,58 @@
 import React, { useState } from "react";
-import LoginUser from "../../context/UserContext"
-import {
-  Grid,
-  LinearProgress,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  Button
-} from "@material-ui/core";
-import { useTheme } from "@material-ui/styles";
-import {
-  ResponsiveContainer,
-  ComposedChart,
-  AreaChart,
-  LineChart,
-  Line,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-  YAxis,
-  XAxis,
-} from "recharts";
+// import LoginUser from "../../context/UserContext"
+// import {
+//   Grid,
+//   LinearProgress,
+//   Select,
+//   OutlinedInput,
+//   MenuItem,
+//   Button
+// } from "@material-ui/core";
+// import { useTheme } from "@material-ui/styles";
+// import {
+//   ResponsiveContainer,
+//   ComposedChart,
+//   AreaChart,
+//   LineChart,
+//   Line,
+//   Area,
+//   PieChart,
+//   Pie,
+//   Cell,
+//   YAxis,
+//   XAxis,
+// } from "recharts";
 
 // styles
-import useStyles from "./styles";
+// import useStyles from "./styles";
 
-// components
-import mock from "./mock";
-import Widget from "../../components/Widget";
-import PageTitle from "../../components/PageTitle";
-import { Typography } from "../../components/Wrappers";
-import Dot from "../../components/Sidebar/components/Dot";
-import Table from "./components/Table/Table";
-import BigStat from "./components/BigStat/BigStat";
+// // components
+// import mock from "./mock";
+// import Widget from "../../components/Widget";
+// import PageTitle from "../../components/PageTitle";
+// import { Typography } from "../../components/Wrappers";
+// import Dot from "../../components/Sidebar/components/Dot";
+// import Table from "./components/Table/Table";
+// import BigStat from "./components/BigStat/BigStat";
 
-const mainChartData = getMainChartData();
-const PieChartData = [
-  { name: "Group A", value: 400, color: "primary" },
-  { name: "Group B", value: 300, color: "secondary" },
-  { name: "Group C", value: 300, color: "warning" },
-  { name: "Group D", value: 200, color: "success" },
-];
+// const mainChartData = getMainChartData();
+// const PieChartData = [
+//   { name: "Group A", value: 400, color: "primary" },
+//   { name: "Group B", value: 300, color: "secondary" },
+//   { name: "Group C", value: 300, color: "warning" },
+//   { name: "Group D", value: 200, color: "success" },
+// ];
 
 export default function Dashboard(props) {
-  var classes = useStyles();
-  var theme = useTheme();
+  // var classes = useStyles();
+  // var theme = useTheme();
 
   // local
-  var [mainChartState, setMainChartState] = useState("monthly");
+  // var [mainChartState, setMainChartState] = useState("monthly");
 
   return (
     <>
-      <PageTitle title="Dashboard" button={<Button
+      {/* <PageTitle title="Dashboard" button={<Button
       variant="contained"
       size="medium"
       color="secondary"
@@ -342,7 +342,7 @@ export default function Dashboard(props) {
             <Table data={mock.table} />
           </Widget>
         </Grid>
-      </Grid>
+      </Grid> */}
     </>
   );
 }

@@ -42,6 +42,7 @@ import PersonalMessage from "../../pages/message/personalMessage"
 import AllContacts from "../../pages/message/allContactMessage"
 import GroupMessage from "../../pages/message/groupMessage"
 import UploadExcelSheet from "../../pages/contacts/uploadSheet"
+import ColumnMapping from "../../pages/contacts/columnMapping"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -67,22 +68,28 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
           >
             <div className={classes.fakeToolbar} />
             <Switch>
+
+              <Route path="/app/users" exact component={Users} />
+              <Route path="/app/user/register" exact component={UserRegister} />
+
               <Route path="/app/dashboard" component={Dashboard} />
+
               <Route path="/app/message" exact component={Message} />
               <Route path="/app/message/personalmessage" exact component={PersonalMessage} />
               <Route path="/app/message/groupmessage" exact component={GroupMessage} />
               <Route path="/app/message/allcontacts" exact component={AllContacts} />
 
+              <Route path="/app/contact/register" exact component={AddContacts} />
+              <Route path="/app/contacts" exact component={Contacts} />
               <Route path="/app/contacts/addexcel" exact component={UploadExcelSheet} />
-              <Route path="/app/users" component={Users} />
-              <Route path="/app/user/register" component={UserRegister} />
+              <Route path="/app/contacts/addexcel/mapping" exact component={ColumnMapping} />
+
+ 
               {isAuth.user.role === "admin" ? <Route path="/app/company/register" component={CompanyRegister} /> : null }
-              <Route path="/app/contact/register" component={AddContacts} />
               <Route path="/app/group/register" component={CreateGroups} />
               <Route path="/app/notifications" component={Notifications} />
               <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
               <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />
-              <Route path="/app/contacts" exact component={Contacts} />
               <Route path="/app/profile" component={Profile} />
 
               <Route

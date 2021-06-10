@@ -2,12 +2,8 @@ import { makeStyles } from "@material-ui/styles";
 
 export default makeStyles(theme => ({
   container: {
-    height: "100vh",
-    width: "100vw",
-    display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
     top: 0,
     left: 0,
   },
@@ -40,7 +36,6 @@ export default makeStyles(theme => ({
   },
   formContainer: {
     width: "50%",
-    height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -49,8 +44,22 @@ export default makeStyles(theme => ({
       width: "50%",
     },
   },
+  dropContainer: {
+    width: 550,
+  },
+  dataTable: {
+    marginTop: theme.spacing(5),
+  },
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+  input: {
+    display: 'none',
+  },
   form: {
-    width: 500,
+    width: 550,
   },
   tab: {
     fontWeight: 350,

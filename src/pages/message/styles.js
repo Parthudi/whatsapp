@@ -13,4 +13,27 @@ export default makeStyles(theme => ({
   text: {
     marginBottom: theme.spacing(5),
   },
+  buttonBackground: {
+    height: "100px"
+  },
+  groupDownButton:{
+    width : "880px"
+  },
+  button: {
+    padding: theme.spacing(2),
+    marginLeft: theme.spacing(5),
+    marginRight: theme.spacing(5),
+  }  ,
+  sendMessageButton: {
+    margin: theme.spacing(4),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    textTransform: "none",
+  },
+  sendButtonIcon: {
+    marginLeft: theme.spacing(2),
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
 }));

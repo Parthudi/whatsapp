@@ -6,8 +6,10 @@ import { Grid ,TextField,  Button,
   Select,
   MenuItem} from "@material-ui/core";
 import QRCode from "qrcode.react";
+import { Send as SendIcon } from "@material-ui/icons";
+
 // import QRReader from "react-qr-scanner";
-import { messageGroup, isAuthenticated } from "../../context/UserContext";
+import { messageGroup} from "../../context/UserContext";
 
 // styles
 import useStyles from "./styles";
@@ -137,13 +139,8 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
           <form className={classes.root} noValidate autoComplete="off">
                 <div>
-                        <InputLabel id="group"> Company </InputLabel>
-                        <Select labelId="group" id="group"  onChange={e => setGroup(e.target.value)}   InputProps={{
-                            classes: {
-                              underline: classes.textFieldUnderline,
-                              input: classes.textField,
-                            },
-                          }}>
+                        <InputLabel id="group"> Groups </InputLabel>
+                        <Select labelId="group" id="group"  onChange={e => setGroup(e.target.value)}  className={classes.groupDownButton}>
                           {allgroups && allgroups.map((comp, i) => {
                             return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                           })}
@@ -184,6 +181,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                     size="large"
                   >
                      Send 
+                     <SendIcon className={classes.sendButtonIcon} />
                   </Button>
                 {showMessage.length > 15 ? 
                        <Typography color="secondary" noWrap>

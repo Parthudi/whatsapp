@@ -50,7 +50,10 @@ export default makeStyles(theme => ({
     },
   },
   form: {
-    width: 500,
+    width: 550,
+  },
+  dropContainer: {
+    width: 550,
   },
   tab: {
     fontWeight: 350,

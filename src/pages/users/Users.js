@@ -7,32 +7,7 @@ import {
 } from "@material-ui/icons";
 // components
 import PageTitle from "../../components/PageTitle/PageTitle";
-import Widget from "../../components/Widget/Widget";
-import Table from "../dashboard/components/Table/Table";
-import {isAuthenticated} from "../../context/UserContext"
-// data
-import mock from "../dashboard/mock";
-import { propTypes } from "qrcode.react";
 
-// const datatableData = [
-//   [ "Vistaura", "Joe James", "parth@gmail.com",  "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "John Walsh", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Bob Herm", "parth@gmail.com", "User", "16:25", "19:35",  <EditIcon/>],
-//   [ "Vistaura", "James Houston", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Prabhakar Linwood", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Kaui Ignace", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Esperanza Susanne", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Christian Birgitte", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Meral Elias", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Deep Pau", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Sebastiana Hani", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Marciano Oihana", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Brigid Ankur", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Anna Siranush", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Avram Sylva", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/>],
-//   [ "Vistaura", "Serafima Babatunde", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-//   [ "Vistaura", "Gaston Festus", "parth@gmail.com", "User", "16:25", "19:35", <EditIcon/> ],
-// ];
 
 const useStyles = makeStyles(theme => ({
   tableOverflow: {
@@ -43,34 +18,50 @@ const useStyles = makeStyles(theme => ({
 const Tables = (props) => {
 
 const [dataa, setDataa] = useState([]);
-const [companyDataa, setCompanyDataa] = useState([]);
-const {token} = isAuthenticated();
+const [companyDataa, setCompanyDataa] = useState("");
+
+const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const usersData = () => {
+    let userCompanyID = "";
+    if(isAuth.user.role === "user"){
+       userCompanyID = isAuth.user.company;
+    }else{
+      userCompanyID = "admin";
+    }
+    
      fetch("http://localhost:4000/users",{
-        method: "GET",
+        method: "POST",
         headers: {
-        "Authorization" : `Bearer ${token}`
-          }
-      }).then(res => res.json()).then(resp => (setDataa(resp.user), setCompanyDataa(resp.company) ))
+        "Authorization" : `Bearer ${isAuth.token}`,
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({userCompanyID})
+      }).then(res => res.json()).then(resp => (setDataa(resp.user), setCompanyDataa(resp.companyName) ))
   }
 
 useEffect(() => { 
     usersData();
       }, []);
 
-const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
-
-  const classes = useStyles();
       console.log(dataa);
 
       let datatableData = [];
-      dataa.forEach(element => {
-        datatableData.push([
-          [`${element.company}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
-          ]) }) 
-      const columns = ["Company" , "Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
-      
+      let columns = [];
+      if(isAuth.user.role === "user") {
+        dataa.forEach(element => {
+          datatableData.push([
+           [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
+            ]) }) 
+        columns = ["Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
+      }else{
+        dataa.forEach(element => {
+          datatableData.push([
+           [`${companyDataa}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
+            ]) }) 
+        columns = ["Company", "Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
+      }
+  
       const addUserHandler = () => {
           props.history.push("/app/user/register");
       }
@@ -95,6 +86,8 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
           size="large" >
           Add Company 
       </Button> : null }
+
+      <br/><br/>
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <MUIDataTable

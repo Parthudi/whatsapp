@@ -4,8 +4,6 @@ import { Grid, Button, CircularProgress,
 import { makeStyles } from "@material-ui/styles";
 import MUIDataTable from "mui-datatables";
 import { withRouter } from "react-router-dom";
-import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
 import PageTitle from "../../components/PageTitle/PageTitle";
 
@@ -32,11 +30,14 @@ const [dataa, setDataa] = useState([]);
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const usersData = () => {
+     const userCompanyID = isAuth.user.company;
      fetch("http://localhost:4000/contacts",{
-        method: "GET",
+        method: "POST",
         headers: {
-        "Authorization" : `Bearer ${isAuth.token}`
-          }
+        "Authorization" : `Bearer ${isAuth.token}`,
+        "Content-Type": "application/json"
+          },
+        body: JSON.stringify({userCompanyID})
       }).then(res => res.json()).then(resp => (setDataa(resp.contact)))
   }
 
@@ -49,10 +50,10 @@ useEffect(() => {
       let datatableData = [];
       dataa.forEach(element => {
         datatableData.push(
-          [`${element.company}` , `${element.email}`,  `${element.mobile_number}` , `${element.country_code}`] 
+          [`${element.email}`,  `${element.mobile_number}` , `${element.country_code}`] 
           )
         }) 
-      const columns = ["Company_ID", "Email" , "Mobile_Number" ,"Country_Code"]; 
+      const columns = ["Email" , "Mobile_Number" ,"Country_Code"]; 
     
     const addContactHandler = () => {
           props.history.push("/app/contact/register");

@@ -2,6 +2,8 @@ import React, {useState, useEffect} from "react";
 import { Grid ,TextField,  Button,
   CircularProgress,
   Fade,} from "@material-ui/core";
+  import { Send as SendIcon } from "@material-ui/icons";
+
 import QRCode from "qrcode.react";
 // import QRReader from "react-qr-scanner";
 import {messageAllUsers} from "../../context/UserContext";
@@ -142,6 +144,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                     size="large"
                   >
                      Send 
+                     <SendIcon className={classes.sendButtonIcon} />
                   </Button>
                 {showMessage.length > 15 ? 
                        <Typography color="secondary" noWrap>

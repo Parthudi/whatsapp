@@ -90,7 +90,7 @@ useEffect(() => {
         {/* ///////////////////Signup User///////////////////// */}
             <React.Fragment>
               <Typography variant="h2" className={classes.subGreeting}>
-                Create Account
+                Create User
               </Typography>
               {error && error.length > 6 ? (
                 <Fade in={error}>
@@ -151,54 +151,34 @@ useEffect(() => {
                 type="password"
                 fullWidth
               />
-
+<br/>
             {isAuth.user.role === "user" ? 
                <div>
                <InputLabel id="role"> Role </InputLabel>
-                 <Select labelId="role" id="role"  onChange={e => setRole(e.target.value)}   InputProps={{
-                   classes: {
-                     underline: classes.textFieldUnderline,
-                     input: classes.textField,
-                   },
-                 }}>
+                 <Select labelId="role" id="role" label="Role"  onChange={e => setRole(e.target.value)}   className={classes.dropContainer}>
                    <MenuItem value={isAuth.user.role} > {isAuth.user.role}  </MenuItem>
                  </Select> 
                </div>        :
 
               <div>
                 <InputLabel id="role"> Role </InputLabel>
-                <Select labelId="role" id="role"  onChange={e => setRole(e.target.value)}   InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}>
+                <Select labelId="role" id="role"  onChange={e => setRole(e.target.value)}  className={classes.dropContainer}>
                   <MenuItem value="user" > User  </MenuItem>
                   <MenuItem value="admin" > Admin  </MenuItem>
                 </Select> 
               </div>
-            } <br/><br/>
-
+            } 
+<br/>
             {isAuth.user.role === "user" ?
               <div>
                 <InputLabel id="company"> Company </InputLabel>
-                  <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}   InputProps={{
-                    classes: {
-                      underline: classes.textFieldUnderline,
-                      input: classes.textField,
-                    },
-                  }}>
+                  <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}  className={classes.dropContainer}>
                     <MenuItem value={isAuth.user.company} > {isAuth.companyName}  </MenuItem>
                   </Select> 
                 </div>  : 
                   (  <div>
                         <InputLabel id="company"> Company </InputLabel>
-                        <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}   InputProps={{
-                            classes: {
-                              underline: classes.textFieldUnderline,
-                              input: classes.textField,
-                            },
-                          }}>
+                        <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}  className={classes.dropContainer}>
                           {allcompany && allcompany.map((comp, i) => {
                             return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                           })}
@@ -232,7 +212,7 @@ useEffect(() => {
                     fullWidth
                     className={classes.createAccountButton}
                   >
-                    Create your account
+                    Create 
                   </Button>
                 )}
               </div>

@@ -41,8 +41,8 @@ function Login(props) {
   // const [roleValue , setRoleValue] = useState("")
   // const [companyValue, setCompanyValue] = useState("")
 
-  const [forgotEmailValue, setForgotEmailValue] = useState("")
-  const [forgotPasswordValue, setForgotPasswordValue] = useState("")
+  // const [forgotEmailValue, setForgotEmailValue] = useState("")
+  // const [forgotPasswordValue, setForgotPasswordValue] = useState("")
 
   // const [companyName, setCompanyName] = useState("Vistaura")
   // const [address1, setAddress1] = useState("202-A avadh residency")
@@ -166,29 +166,20 @@ function Login(props) {
                       Login
                     </Button>
                 )}
-                <Button
+                {/* <Button
                   color="primary"
                   size="large"
                   className={classes.forgetButton}
                   onClick = { () => setActiveTabId(2)}
                 >
                   Forget Password
-                </Button>
+                </Button> */}
               </div>
 
-              <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
-            </div>
-            <Button size="large" className={classes.googleButton}>
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-            </Button>
             </React.Fragment>
           )}
 
-      {/* ////////////////////////// FORGET PASSWORD /////////////////////////// */}
+      {/* ////////////////////////// FORGET PASSWORD ///////////////////////////
       {activeTabId === 3 && (
             <React.Fragment>
               <Typography variant="h2" className={classes.subGreeting}>
@@ -263,7 +254,7 @@ function Login(props) {
               </div>
               
             </React.Fragment>
-          )}
+          )} */}
 
         </div> <br></br>
         <Typography color="primary" className={classes.copyright}>

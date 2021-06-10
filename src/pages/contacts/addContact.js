@@ -74,7 +74,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         {/* ///////////////////Signup User///////////////////// */}
             <React.Fragment>
               <Typography variant="h2" className={classes.subGreeting}>
-                <u> Contacts </u>
+                 Contacts 
               </Typography>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
@@ -84,23 +84,13 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               {isAuth.user.role === "user" ?
                   <div>
                   <InputLabel id="company"> Company </InputLabel>
-                    <Select labelId="company" id="company" onChange={e => setCompany(e.target.value)} InputProps={{
-                      classes: {
-                        underline: classes.textFieldUnderline,
-                        input: classes.textField,
-                      },
-                    }}>
+                    <Select labelId="company" id="company" onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
                       <MenuItem  value={isAuth.user.company}> {isAuth.companyName}  </MenuItem>
                     </Select> 
                 </div>    :
                         (  <div>
                             <InputLabel id="company"> Company </InputLabel>
-                            <Select labelId="company" id="company" value={isAuth.user.company}  onChange={e => setCompany(e.target.value)} InputProps={{
-                                classes: {
-                                  underline: classes.textFieldUnderline,
-                                  input: classes.textField,
-                                },
-                              }}>
+                            <Select labelId="company" id="company" value={isAuth.user.company}  onChange={e => setCompany(e.target.value)}className={classes.dropContainer}>
                               {allcompany && allcompany.map((comp, i) => {
                                 return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                               })}
