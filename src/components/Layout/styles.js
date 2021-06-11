@@ -26,5 +26,13 @@ export default makeStyles(theme => ({
     '&:not(:first-child)': {
       paddingLeft: 15
     }
+  },
+  footer: {
+    textAlign: "center",
+    // bottom : 5,
+    // justifyContent: "center",
+    // alignItems: "center",
+    bottom:20,
+    height:"60px",   /* Height of the footer */
   }
 }));

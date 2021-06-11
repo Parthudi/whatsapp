@@ -10,12 +10,14 @@ import {Box, IconButton, Link} from '@material-ui/core'
 import Icon from '@mdi/react'
 import { signOut, useUserDispatch } from "../../context/UserContext";
 
-//icons
-import {
-  mdiFacebook as FacebookIcon,
-  mdiTwitter as TwitterIcon,
-  mdiGithub as GithubIcon,
-} from '@mdi/js'
+import { Typography } from "../Wrappers";
+
+// //icons
+// import {
+//   mdiFacebook as FacebookIcon,
+//   mdiTwitter as TwitterIcon,
+//   mdiGithub as GithubIcon,
+// } from '@mdi/js'
 
 // styles
 import useStyles from "./styles";
@@ -27,12 +29,12 @@ import Sidebar from "../Sidebar";
 // pages
 import Dashboard from "../../pages/dashboard";
 import Message from "../../pages/message/message";
-import Notifications from "../../pages/notifications";
+// import Notifications from "../../pages/notifications";
 import Contacts from "../../pages/contacts/contacts"
-import Maps from "../../pages/maps";
+// import Maps from "../../pages/maps";
 import Users from "../../pages/users/Users";
-import Icons from "../../pages/icons";
-import Charts from "../../pages/charts";
+// import Icons from "../../pages/icons";
+// import Charts from "../../pages/charts";
 import Profile from "../../pages/profile/profile"
 import UserRegister from "../../pages/users/UserRegister"
 import CompanyRegister from "../../pages/users/CompanyRegister"
@@ -87,19 +89,19 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
  
               {isAuth.user.role === "admin" ? <Route path="/app/company/register" component={CompanyRegister} /> : null }
               <Route path="/app/group/register" component={CreateGroups} />
-              <Route path="/app/notifications" component={Notifications} />
+              {/* <Route path="/app/notifications" component={Notifications} /> */}
               <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
               <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />
               <Route path="/app/profile" component={Profile} />
 
-              <Route
+              {/* <Route
                 exact
                 path="/app/ui"
                 render={() => <Redirect to="/app/ui/icons" />}
               />
               <Route path="/app/ui/maps" component={Maps} />
               <Route path="/app/ui/icons" component={Icons} />
-              <Route path="/app/ui/charts" component={Charts} />
+              <Route path="/app/ui/charts" component={Charts} /> */}
             </Switch>
             <Box
               mt={5}
@@ -109,6 +111,13 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               justifyContent="space-between"
             >
             </Box>
+
+             <br></br>
+             <div className={classes.footer}>
+              {/* <Typography color="primary" className={classes.copyright}>
+                © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistanova.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
+              </Typography> */}
+            </div>
           </div>
         </>
     </div>

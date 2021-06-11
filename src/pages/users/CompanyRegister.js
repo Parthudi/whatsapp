@@ -228,9 +228,9 @@ function CompanyRegister(props) {
             </React.Fragment>
         
         </div> <br></br>
-        <Typography color="primary" className={classes.copyright}>
+        {/* <Typography color="primary" className={classes.copyright}>
         © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistaura.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
-        </Typography>
+        </Typography> */}
       </div>
     </Grid>
     </React.Fragment>

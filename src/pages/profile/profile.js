@@ -16,7 +16,7 @@ import { Typography } from "../../components/Wrappers/Wrappers";
 export default function MessagePage() {
   var classes = useStyles();
 
-  const {user, token, companyName} = isAuthenticated();
+  const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
    // local
    var [isLoading, setIsLoading] = useState(false);
@@ -30,19 +30,20 @@ export default function MessagePage() {
       <PageTitle title="Profile" />
       <Grid container spacing={4} >
         
-        <Grid item md={3/7} >
+        <Grid item md={3/7/5} >
           <Widget title="USER PROFILE" disableWidgetMenu  >
                 <AccountIcon  className={classes.sizeOfFont} />
           </Widget>
         </Grid>
 
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={9}>
           <Widget title="USER DETAILS" disableWidgetMenu>
+            <br/>
             <div className={classes.dashedBorder} >
-              <Typography size="md"> Name  : {user.name}</Typography>
-              <Typography size="md"> Company : {companyName}</Typography>
-              <Typography size="md"> Role  : {user.role}</Typography>
-              <Typography size="md"> Email : {user.email}</Typography>
+              <Typography size="md"> Name  : {isAuth.user.name}</Typography>
+              { isAuth.user.role === "user" ? <Typography size="md"> Company : {isAuth.companyName}</Typography> : null }
+              <Typography size="md"> Role  : {isAuth.user.role}</Typography>
+              <Typography size="md"> Email : {isAuth.user.email}</Typography>
             </div>
           </Widget>
         </Grid>

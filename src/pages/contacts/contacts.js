@@ -30,7 +30,7 @@ const [dataa, setDataa] = useState([]);
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const usersData = () => {
-     const userCompanyID = isAuth.user.company;
+     const userCompanyID = isAuth.user.role === "user" ? isAuth.user.company :"admin" ;
      fetch("http://localhost:4000/contacts",{
         method: "POST",
         headers: {
@@ -63,7 +63,6 @@ useEffect(() => {
         props.history.push("/app/group/register")
       }
 
-   
   return (
     <>
       <PageTitle title="Contacts" />

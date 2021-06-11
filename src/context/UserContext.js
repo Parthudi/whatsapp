@@ -202,7 +202,7 @@ export const messageAllUsers = async(message, company_id, token) => {
   }
 }
 
-async function messageUser(contact, message, token) {
+async function messageUser(countrycode, contact, message, token) {
   try{
     const response = await fetch("http://localhost:4000/user/message", {
             method: "POST",
@@ -210,7 +210,7 @@ async function messageUser(contact, message, token) {
             "Authorization" : `Bearer ${token}`,
             "Content-Type": "application/json"
               },
-            body: JSON.stringify({contact: contact, message: message})
+            body: JSON.stringify({contact: countrycode+contact, message: message})
           }).then(res => res.json()) ;
 
           console.log("response at messageUser : " +response.message);

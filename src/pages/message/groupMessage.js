@@ -94,16 +94,27 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
           setError(false);
           setIsLoading(false);
           setShowMessage(response);
+
+          setTimeout(() => { 
+            setShowMessage("");
+            }, 8000);
          }else{
               setMessageValue("");
               setError(false);
               setIsLoading(false);
-              setShowMessage(response);       
-          }
-
-        setTimeout(() => { 
-          setShowMessage("");
-          }, 4000);  
+              setShowMessage(response); 
+              
+              if(response && response.includes("Session")){
+                console.log("session closed");
+                setTimeout(() => { 
+                    window.location.reload();
+                  }, 8000); 
+              }else{
+                setTimeout(() => { 
+                  setShowMessage("");
+                  }, 5000); 
+              } 
+          } 
     })
    
     }catch(error) {
@@ -118,9 +129,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         
         <Grid item xs={12} md={8}>
           <Widget title="SEND MESSAGE" disableWidgetMenu>
-          { isLoading ? (<Fade in={isLoading}>
-            <CircularProgress color="secondary" />
-          </Fade>) : null }
+          { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}} >
+                            <CircularProgress color="secondary" />
+                        </Fade>) : null }
           <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
                     Please fill the credentials properly  :(

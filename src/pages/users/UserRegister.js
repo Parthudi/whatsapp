@@ -172,13 +172,13 @@ useEffect(() => {
             {isAuth.user.role === "user" ?
               <div>
                 <InputLabel id="company"> Company </InputLabel>
-                  <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}  className={classes.dropContainer}>
+                  <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)} disabled={role.length === 0} className={classes.dropContainer}>
                     <MenuItem value={isAuth.user.company} > {isAuth.companyName}  </MenuItem>
                   </Select> 
                 </div>  : 
                   (  <div>
                         <InputLabel id="company"> Company </InputLabel>
-                        <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)}  className={classes.dropContainer}>
+                        <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)} disabled={role.length === 0 || role === "admin"} className={classes.dropContainer}>
                           {allcompany && allcompany.map((comp, i) => {
                             return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                           })}
@@ -204,7 +204,7 @@ useEffect(() => {
                       password.length === 0 ||
                       name.length === 0 ||
                       role.length === 0 ||
-                      company.length === 0 
+                      role === "user" ? company.length === 0  : null 
                     }
                     size="large"
                     variant="contained"
@@ -230,9 +230,9 @@ useEffect(() => {
             </React.Fragment>
 
         </div> <br></br>
-        <Typography color="primary" className={classes.copyright}>
+        {/* <Typography color="primary" className={classes.copyright}>
         © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistaura.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
-        </Typography>
+        </Typography> */}
       </div>
     </Grid>
     </React.Fragment>

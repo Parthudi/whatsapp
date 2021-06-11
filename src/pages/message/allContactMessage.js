@@ -30,7 +30,6 @@ export default function AllContacts() {
 
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
-  
   const QrCodeHandler = async() => {
         try{
           setIsLoading(true);
@@ -58,6 +57,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
       setIsLoading(true);
       messageAllUsers(message, isAuth.user.company, isAuth.token).then((response) => {
         console.log("response : " +response);
+      
         if(response.error){
             console.log(response.error);
             setError(true);
@@ -69,18 +69,28 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
           setError(false);
           setIsLoading(false);
           setShowMessage(response);
+
+          setTimeout(() => { 
+            setShowMessage("");
+            }, 8000);
          }else{
               setMessageValue("");
               setError(false);
               setIsLoading(false);
-              setShowMessage(response);       
+              setShowMessage(response);  
+              
+              if(response && response.includes("Session")){
+                console.log("session closed");
+                setTimeout(() => { 
+                    window.location.reload();
+                  }, 8000); 
+              }else{
+                setTimeout(() => { 
+                  setShowMessage("");
+                  }, 5000); 
+              } 
           }
-
-        setTimeout(() => { 
-          setShowMessage("");
-          }, 4000);  
-    })
-   
+      })
     }catch(error) {
         setError(true);
   }
@@ -91,11 +101,11 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
       <PageTitle title="Message" />
       <Grid container spacing={4}>
         
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={showQr == true ? 12 : 8}>
           <Widget title="SEND MESSAGE" disableWidgetMenu>
-          { isLoading ? (<Fade in={isLoading}>
-            <CircularProgress color="secondary" />
-          </Fade>) : null }
+          { isLoading ? (<Fade in={isLoading}  style={{marginLeft:"50px"}}>
+                             <CircularProgress color="secondary" />
+                          </Fade>) : null }
           <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
                     Please fill the credentials properly  :(
@@ -110,7 +120,8 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                size="large"
              >
                 Show QR Code 
-             </Button>  : 
+             </Button>
+        : 
           <form className={classes.root} noValidate autoComplete="off">
               <TextField
                 id="message"

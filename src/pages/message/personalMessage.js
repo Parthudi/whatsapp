@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react";
 import { Grid ,TextField,  Button,
   CircularProgress,
-  Fade,} from "@material-ui/core";
+  Fade,InputLabel, Select,MenuItem } from "@material-ui/core";
 import QRCode from "qrcode.react";
 import { Send as SendIcon } from "@material-ui/icons";
 
-import { messageUser, isAuthenticated } from "../../context/UserContext";
+import { messageUser} from "../../context/UserContext";
 
 // styles
 import useStyles from "./styles";
@@ -26,25 +26,19 @@ export default function PersonalMessage() {
    const [messageValue, setMessageValue] = useState("");
    const [showQr , setShowQr] = useState(true);
    const [showMessage , setShowMessage] = useState("");
-  const  {token} = isAuthenticated();
+   const [allcountrycode , setAllCountryCode] = useState([]);
+   const [countrycode ,setCountryCode] = useState("");
   
-  // useEffect(async() => {
-  //   try{
-  //     setIsLoading(true);
-  //     const response = await fetch("http://localhost:4000/users/auth", {
-  //             method: "GET",
-  //             headers: {
-  //             "Authorization" : `Bearer ${token}`,
-  //             "Content-Type": "application/json"
-  //               }
-  //           }).then(res => res.json()) 
 
-  //           setIsLoading(false);
-  //           setResponse(response);
-  //     }catch(error){
-  //         console.log(error);
-  //   } 
-  // }, []);
+const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
+
+const fetchCountryCode = async() => {
+  await fetch("https://gist.githubusercontent.com/anubhavshrimal/75f6183458db8c453306f93521e93d37/raw/f77e7598a8503f1f70528ae1cbf9f66755698a16/CountryCodes.json")
+      .then(resp => resp.json()).then(data => setAllCountryCode(data));
+}
+  useEffect(async() => {
+    fetchCountryCode();
+  }, []);
 
   const QrCodeHandler = async() => {
         try{
@@ -52,7 +46,7 @@ export default function PersonalMessage() {
           const response = await fetch("http://localhost:4000/users/auth", {
                   method: "GET",
                   headers: {
-                  "Authorization" : `Bearer ${token}`,
+                  "Authorization" : `Bearer ${isAuth.token}`,
                   "Content-Type": "application/json"
                     }
                 }).then(res => res.json()) 
@@ -68,27 +62,44 @@ export default function PersonalMessage() {
         } 
   }
 
-  const messageUserHandler = (contact, message) => {
+  const messageUserHandler = (countrycode,contact, message) => {
     try{
       setIsLoading(true);
-      messageUser(contact, message, token).then((response) => {
+      messageUser(countrycode,contact, message, isAuth.token).then((response) => {
         console.log("response : " +response);
+        if(response.error){
+          console.log(response.error);
+          setError(true);
+          setIsLoading(false);
+       }
         if(response.includes("Sent")) {
           setResponse("");
           setMessageValue("");
           setError(false);
           setIsLoading(false);
           setShowMessage(response);
+
+          setTimeout(() => { 
+            setShowMessage("");
+            }, 8000); 
          }else{
+           console.log("inside else ");
               setMessageValue("");
               setError(false);
               setIsLoading(false);
-              setShowMessage(response);       
+              setShowMessage(response); 
+              
+              if(response && response.includes("Session")){
+                console.log("session closed");
+                setTimeout(() => { 
+                    window.location.reload();
+                  }, 8000); 
+              }else{
+                setTimeout(() => { 
+                  setShowMessage("");
+                  }, 5000); 
+              } 
           }
-
-        setTimeout(() => { 
-          setShowMessage("");
-          }, 4000);  
     })
    
     }catch(error) {
@@ -103,9 +114,9 @@ export default function PersonalMessage() {
         
         <Grid item xs={12} md={8}>
           <Widget title="SEND MESSAGE" disableWidgetMenu>
-          { isLoading ? (<Fade in={isLoading}>
-            <CircularProgress color="secondary" />
-          </Fade>) : null }
+          { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}}>
+                            <CircularProgress color="secondary" />
+                         </Fade>) : null }
           <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
                     Please fill the credentials properly  :(
@@ -121,9 +132,18 @@ export default function PersonalMessage() {
              >
                 Show QR Code 
              </Button>  : 
+
           <form className={classes.root} noValidate autoComplete="off">
+
+            <InputLabel id="group"> Country_Code </InputLabel>
+            <Select labelId="group" id="group" value={countrycode} onChange={e => setCountryCode(e.target.value)}  className={classes.groupDownButton}>
+              {allcountrycode && allcountrycode.map((comp, i) => {
+                  return <MenuItem value={comp.dial_code} key={i}> {comp.name} </MenuItem>
+                })}
+            </Select> 
+                
           <TextField 
-                id="Contacts"
+                id="Contact"
                 InputProps={{
                   classes: {
                     underline: classes.textFieldUnderline,
@@ -134,7 +154,7 @@ export default function PersonalMessage() {
                 onChange={e => setContactValue(e.target.value)}
                 // disabled = {response.length > 1}
                 margin="normal"
-                placeholder="Contacts"
+                placeholder="Contact"
                 type="string"
                 fullWidth
               />
@@ -158,10 +178,11 @@ export default function PersonalMessage() {
             <div className={classes.formButtons}>
                   <Button
                     disabled={
-                      contactValue.length <= 9  || messageValue.length === 0 
+                      contactValue.length <= 9  || messageValue.length === 0 , countrycode.length === 0
                     }
                     onClick={() =>
                       messageUserHandler(
+                        countrycode,
                         contactValue,
                         messageValue
                       )

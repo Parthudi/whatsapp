@@ -22,7 +22,7 @@ const [companyDataa, setCompanyDataa] = useState("");
 
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
-  const usersData = () => {
+  const usersData = async() => {
     let userCompanyID = "";
     if(isAuth.user.role === "user"){
        userCompanyID = isAuth.user.company;
@@ -37,7 +37,8 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         "Content-Type": "application/json"
         },
         body: JSON.stringify({userCompanyID})
-      }).then(res => res.json()).then(resp => (setDataa(resp.user), setCompanyDataa(resp.companyName) ))
+      }).then(res => res.json()).then(resp => (setDataa(resp.onlyUsers) ))
+      console.log("companyDataa + " +JSON.stringify(companyDataa));
   }
 
 useEffect(() => { 
@@ -57,7 +58,7 @@ useEffect(() => {
       }else{
         dataa.forEach(element => {
           datatableData.push([
-           [`${companyDataa}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
+           [`${element.company.name}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,  [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
             ]) }) 
         columns = ["Company", "Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
       }

@@ -15,8 +15,8 @@ export default function MessagePage(props) {
   return (
     <>
       <PageTitle title="Message" />
-      
-        <Grid item xs={12} md={12}>
+
+        <Grid item xs={12} md={12} className={classes.backgroundSetting}>
           <Widget  disableWidgetMenu>
             <div className={classes.buttonBackground}>
             <Fab

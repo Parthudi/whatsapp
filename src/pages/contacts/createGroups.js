@@ -28,12 +28,12 @@ function CreateGroups(props) {
   const [name, setName] = useState("");
   const [dataa, setDataa] = useState([]);
   const [mobilenumbers, setMobileNumbers] = useState([]);
-  const [fabb , setFabb] = useState(false);
+  const [disablebutton , setDisablebutton] = useState([]);
 
   const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const usersData = () => {
-    const userCompanyID = isAuth.user.company;
+    const userCompanyID = isAuth.user.role === "user" ? isAuth.user.company :"admin" ;;
     fetch("http://localhost:4000/contacts",{
        method: "POST",
        headers: {
@@ -53,12 +53,16 @@ function CreateGroups(props) {
     const addUserToGroup = async(i) => {
         datatableData.splice(i,1);
         console.log(datatableData);
-        setFabb(true)
-        let floors = [...mobilenumbers];
-        floors.push(dataa[i].country_code+dataa[i].mobile_number);
-        setMobileNumbers(floors);
-      console.log("floor : " +floors);
-      console.log(" past : " +mobilenumbers);
+
+        let disabledButton = [ ...disablebutton];
+        disabledButton.push(i);
+        setDisablebutton(disabledButton)
+        console.log("disabledButton : " +disabledButton);
+
+        let mobileNumbersArr = [...mobilenumbers];
+        mobileNumbersArr.push(dataa[i].country_code+dataa[i].mobile_number);
+        setMobileNumbers(mobileNumbersArr)
+        console.log("mobileNumbersArr : " +mobileNumbersArr);
     }
   
     const createGroupHandler = async(name) => {
@@ -80,8 +84,8 @@ function CreateGroups(props) {
      dataa.forEach((element,i)=> {
        console.log("i : "+ i);
        datatableData.push(
-         [ 
-          <Fab size="small" key={i} disabled={fabb} color="primary" onClick={() => addUserToGroup(i)} aria-label="add">
+         [                                                      
+          <Fab size="small" onClick={() => addUserToGroup(i)} key={i} disabled={disablebutton.includes(i)} color="primary"  aria-label="add">
               <AddIcon />
           </Fab> ,  `${element.email}`,  `${element.mobile_number}` , `${element.country_code}`,] 
          )
@@ -118,9 +122,8 @@ function CreateGroups(props) {
                     input: classes.textField,
                   },
                 }}
-                value={contacts}
-                onChange={e => contactChangedHandler}
-                // disabled = { contacts.length === 0 }
+                value={mobilenumbers}
+                // onChange={e => contactChangedHandler}
                 margin="normal"
                 placeholder="Contacts"
                 type="text"
@@ -154,6 +157,7 @@ function CreateGroups(props) {
                            )
                         }
                     disabled={
+                      mobilenumbers.length === 0 ||
                       name.length === 0 
                     }
                     size="large"

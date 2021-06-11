@@ -139,7 +139,7 @@ export default function Header(props) {
         <Typography variant="h6" weight="medium" className={classes.logotype}>
            Admin
         </Typography>
-        <div className={classes.grow} />
+        {/* <div className={classes.grow} />
         <div
           className={classNames(classes.search, {
             [classes.searchFocused]: isSearchOpen,
@@ -331,8 +331,8 @@ export default function Header(props) {
             >
               Sign Out
             </Typography>
-          </div>
-        </Menu>
+          </div> */}
+        {/* </Menu> */}
       </Toolbar>
     </AppBar>
   );

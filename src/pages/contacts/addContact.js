@@ -30,6 +30,7 @@ function AddContacts(props) {
  
   const addContactsHandler = async(company,mobile,countrycode,email) => {
        setIsLoading(true);
+       
      const contactRegister = await fetch(`http://localhost:4000/contact/signup`,{
             method: "POST",
             headers: {
@@ -41,8 +42,11 @@ function AddContacts(props) {
 
     console.log("contactRegister :" +contactRegister);
     setIsLoading(false);
-    window.location.reload();
-    // props.history.push("/app/contacts");
+    setAllCompany("")
+    setCompany("")
+    setMobile("")
+    setCountryCode("")
+    setEmail("")
   }
 
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
@@ -56,7 +60,6 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                   }
                 }).then(response => response.json());
   
-      // console.log("company : " +JSON.stringify(company));
       setAllCompany(company);
       setIsLoading(false);
   }
@@ -71,7 +74,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
       <div className={classes.formContainer}>
         <div className={classes.form}>     
 
-        {/* ///////////////////Signup User///////////////////// */}
+        {/* ///////////////////Add Contacts///////////////////// */}
             <React.Fragment>
               <Typography variant="h2" className={classes.subGreeting}>
                  Contacts 
@@ -84,13 +87,13 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               {isAuth.user.role === "user" ?
                   <div>
                   <InputLabel id="company"> Company </InputLabel>
-                    <Select labelId="company" id="company" onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
+                    <Select labelId="company" id="company" value={isAuth.companyName} onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
                       <MenuItem  value={isAuth.user.company}> {isAuth.companyName}  </MenuItem>
                     </Select> 
                 </div>    :
                         (  <div>
                             <InputLabel id="company"> Company </InputLabel>
-                            <Select labelId="company" id="company" value={isAuth.user.company}  onChange={e => setCompany(e.target.value)}className={classes.dropContainer}>
+                            <Select labelId="company" id="company" value={company}  onChange={e => setCompany(e.target.value)}className={classes.dropContainer}>
                               {allcompany && allcompany.map((comp, i) => {
                                 return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                               })}
@@ -169,7 +172,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                     color="primary"
                     fullWidth
                     className={classes.createAccountButton}  >
-                    Create Contact
+                    Create
                   </Button>
                 )}
               </div>
@@ -177,9 +180,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
             </React.Fragment>
 
         </div> <br></br>
-        <Typography color="primary" className={classes.copyright}>
+        {/* <Typography color="primary" className={classes.copyright}>
         © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistaura.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
-        </Typography>
+        </Typography> */}
       </div>
     </Grid>
     </React.Fragment>
