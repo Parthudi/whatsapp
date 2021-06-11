@@ -53,7 +53,6 @@ const userSchema = new mongoose.Schema({
     company: {
         type: ObjectId,                  
         ref: 'company',                 
-        required: true
     },
     tokenze : [{
         token: {

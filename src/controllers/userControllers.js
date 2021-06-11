@@ -17,11 +17,25 @@ exports.findUserId= async (req, res, next, id) => {
 exports.signupUser = async (req, res) => {
     try{     
         console.log("user signup : " +JSON.stringify(req.body));
-        const user = new User(req.body)
-    
-        await user.save()
-        res.status(201).json({'user ' : user})
 
+        if(req.body && req.body.company && req.body.company.length === 0) {
+            const createUser = {};
+
+            createUser["name"] =  req.body.name;
+            createUser["email"] = req.body.email;
+            createUser["password"] = req.body.password;
+            createUser["role"] = req.body.role;
+
+            console.log(JSON.stringify(createUser));
+            const user = new User(createUser);
+            await user.save()
+            res.status(201).json({'user ' : user})
+        }else{
+            const user = new User(req.body);
+            await user.save()
+            res.status(201).json({'user ' : user})
+        }
+        
       }catch(error){  
         console.log(error);       
         if(!req.body.name) {
@@ -49,12 +63,18 @@ exports.signupUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const user = await User.findUserCredientials(req.body.email, req.body.password)
-        const company = await Company.findById(`${user.company}`)
-        const companyName = company.name;
-        const token = await user.generateToken()
+        console.log("user : " +JSON.stringify(user));
 
-        return res.status(200).send({user, token, companyName})
-
+        if(user.role === "admin") {
+            const token = await user.generateToken();
+            return res.status(200).send({user, token});
+        }else{
+            const company = await Company.findById(`${user.company}`)
+            const companyName = company.name;
+            const token = await user.generateToken()
+    
+            return res.status(200).send({user, token, companyName})
+        }
     }catch(error){
         if(!req.body.email) {
             res.status(401).send({error: 'Please enter Email'})
@@ -93,21 +113,25 @@ exports.read = async(req, res) => {
             const CompanyID = req.body.userCompanyID;
 
             if(CompanyID === "admin") {
-                const user = await User.find().select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
-                const nameOfCompany = user.map(async(u) => {
-                            const company = await Company.find({_id : u.company});
-                            const companyName = company.name;
-                            return companyName;
-                        })
-                console.log("users : " +user);
-                console.log("nameOfCompany : " +nameOfCompany);
-                res.status(201).send({user, nameOfCompany});
+                console.log("user is admin");
+                const user = await User.find().populate("company").select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+
+                const onlyUsers = [];
+                const removeAdmins = user.map((u) => {
+                    if(u.role === "user"){
+                         return onlyUsers.push(u);
+                    }
+                });
+
+                console.log("onlyUsers : " + onlyUsers);
+
+                await res.status(201).send({onlyUsers});
             }else{
-                const user = await User.find({company : CompanyID}).select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+                const onlyUsers = await User.find({company : CompanyID}).select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
                 const company = await Company.find({_id : CompanyID});
                 const companyName = company.name;
-                console.log("users : " +user);
-                res.status(201).send({user, companyName});
+                console.log("onlyUsers : " +onlyUsers);
+                res.status(201).send({onlyUsers, companyName});
 
             }
             
@@ -206,78 +230,139 @@ exports.message = async(req, res) => {
         console.log("older array  : " +arr);
         console.log("messageToSend : " +text);
 
-
     if (whatsappClient.newClient) {
-            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
-            // console.log("client  : " +JSON.stringify(client));
+        console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
 
-                const start = (client)  => {
-                    console.log("start client");
-                        const accurateData = contacts.indexOf(",");
-                        console.log("accurate : " +accurateData);
-                        if(accurateData == -1){
-                            console.log("single massage "); 
-                            if(elem.includes("+")){
-                                console.log("includes + ");
-                                const newElement = contacts.replace("+", "");
-                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
-                                   }     
-                        contacts.length > response.length ? client.sendMessage(`${contacts}@c.us`, text) : null;
-                        }else{
-                            console.log("multiple massage ");      
-                            arr.forEach(elem => {
-                            console.log("array : " +elem);
-                            if(elem.includes("+")){
-                                console.log("includes + ");
-                                const newElement = elem.replace("+", "");
-                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
-                                   }else{
-                                    elem.length > response.length ? client.sendMessage(`${elem}@c.us`, text) : null;
-                                   }
-                                });
-                            }
-                        };
-                start(client);
-                // client.initialize();
-                await res.status(200).send({message : "Message Sent"});
+        const start = async(client)  => {
+            console.log("start client");
+            const accurateData = contacts.indexOf(",");
+            console.log("accurate : " +accurateData);
+            
+            if(accurateData == -1){
+
+                console.log("single message "); 
+
+                if(contacts && contacts.includes("+")){
+                    console.log("includes + ");
+                        const newElement = await contacts.replace("+", "");
+                        try{
+                            newElement.length > response.length ? await client.sendMessage(`${newElement}@c.us`, text) : null;
+                            res.status(200).send({message : "Message Sent"});
+                        } catch(error){
+                            console.log("error error");
+                            delete whatsappClient.newClient;
+                            res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
+                           }
+                        }  
+                }else{
+                    throw Error("You Can't Send Message to Multiple Users");
+                    }
+                };
+            start(client);
       }else {
           console.log("entering else part ");
-
-
-        // client.on('authenticated', (session) => {
-        //     whatsappClient.newClient = session;
-        //  });
-        
-    //    if(whatsappClient.newClient == null || undefined) {
-    //     client.on("qr", async(qr) => {
-    //         console.log("QR RECEIVED : " +qr);
-    //         await res.status(200).send(JSON.stringify(qr));
-    //     });
-    //    }
-        
-    // client.on("ready", () => {
-    //     console.log("client is ready");
-
-    //     const start = (client)  => {
-    //         console.log("start client");
-    //             const accurateData = contacts.indexOf(",");
-    //             console.log("accurate : " +accurateData);
-    //             if(accurateData == -1){
-    //                 // const chatId = contacts.substring(1) + "@c.us";      
-    //             contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
-    //             }else{
-    //                 arr.forEach(elem => {
-    //                 console.log("array : " +elem);
-    //                     elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
-    //                     });
-    //                 }
-    //             };
-    //     start(client);
-    //     });
-    //     client.initialize();
-        await res.status(200).send({message : "Please Scan the QR Code & then send any message"});
+          throw Error("Please Scan the QR Code & then send any message");
     }
   } catch(error) {
-        res.status(400).send("error:" +error.message);
+        console.log("error error error : " +error.message);
+        res.status(400).send({message : error.message});
     }
 }
+
+
+// exports.message = async(req, res) => {
+//     try {
+//         console.log("entering sendMessage");
+//         const response = [];
+
+//         const body = req.body || {};
+//         const contacts = body.contact;
+//         const text = body.message;
+//         const arr = contacts.split(",");
+      
+//         console.log("contactToSend : " +contacts);
+//         console.log("older array  : " +arr);
+//         console.log("messageToSend : " +text);
+
+//     if (whatsappClient.newClient) {
+//             console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
+
+//                 const start = async(client)  => {
+//                     console.log("start client");
+//                         const accurateData = contacts.indexOf(",");
+//                         console.log("accurate : " +accurateData);
+//                         if(accurateData == -1){
+//                             console.log("single message "); 
+//                             if(contacts.includes("+")){
+//                                 console.log("includes + ");
+//                                 const newElement = await contacts.replace("+", "");
+//                                 try{
+//                                     newElement.length > response.length ? await client.sendMessage(`${newElement}@c.us`, text) : null;
+//                                 } catch(error){
+//                                     console.log("error error");
+//                                     res.status(200).send({message : "Session Is Closed Please Try After Reloading The Page"});
+//                                     throw Error(error.message);
+//                                 }
+//                                 }  
+//                             res.status(200).send({message : "Message Sent"});
+                   
+//                         }else{
+//                           res.status(200).send({message : "You Can't Send Message to Multiple Users"});
+
+//                             // console.log("multiple message ");      
+//                             // arr.forEach(elem => {
+//                             // console.log("array : " +elem);
+//                             // if(elem.includes("+")){
+//                             //     console.log("includes + ");
+//                             //     const newElement = elem.replace("+", "");
+//                             //         newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+//                             //        }else{
+//                             //         elem.length > response.length ? client.sendMessage(`${elem}@c.us`, text) : null;
+//                             //        }
+//                             //     });
+//                             }
+//                         };
+//                 start(client);
+//                 // client.initialize();
+//       }else {
+//           console.log("entering else part ");
+
+//         // client.on('authenticated', (session) => {
+//         //     whatsappClient.newClient = session;
+//         //  });
+        
+//     //    if(whatsappClient.newClient == null || undefined) {
+//     //     client.on("qr", async(qr) => {
+//     //         console.log("QR RECEIVED : " +qr);
+//     //         await res.status(200).send(JSON.stringify(qr));
+//     //     });
+//     //    }
+        
+//     // client.on("ready", () => {
+//     //     console.log("client is ready");
+
+//     //     const start = (client)  => {
+//     //         console.log("start client");
+//     //             const accurateData = contacts.indexOf(",");
+//     //             console.log("accurate : " +accurateData);
+//     //             if(accurateData == -1){
+//     //                 // const chatId = contacts.substring(1) + "@c.us";      
+//     //             contacts.length > response.length ? client.sendMessage(`91${contacts}@c.us`, text) : null;
+//     //             }else{
+//     //                 arr.forEach(elem => {
+//     //                 console.log("array : " +elem);
+//     //                     elem.length > response.length ? client.sendMessage(`91${elem}@c.us`, text) : null;
+//     //                     });
+//     //                 }
+//     //             };
+//     //     start(client);
+//     //     });
+//     //     client.initialize();
+//         await res.status(200).send({message : "Please Scan the QR Code & then send any message"});
+//     }
+//   } catch(error) {
+//         console.log("error error error" +error);
+//         console.log("error error error" +error.message);
+//         res.status(400).send({message : error.message});
+//     }
+// }

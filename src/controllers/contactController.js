@@ -1,18 +1,11 @@
 const Contact = require('../models/contactModel')
-// const xl = require('excel4node');
-const formidable = require('formidable');
-const mv = require('mv');
-// const xlsxFile = require('read-excel-file');
 const XLSX = require("xlsx");
-const excelToJson = require('convert-excel-to-json');
 
 const {Client} = require("whatsapp-web.js");
 const client = new Client();
 const whatsappClient = {};
 
 const fs = require('fs');
-// const NodeXls = require('node-xls');
-var xls = require('excel');
 
 exports.signupContact = async (req, res) => {
     try{     
@@ -32,12 +25,22 @@ exports.signupContact = async (req, res) => {
 exports.readContacts = async(req, res) => {
       try{
               console.log("inside contacts");
-              const companyById = req.body.userCompanyID;
-
-              const contact = await Contact.find({company : companyById}).select("-__v").select("-_id");
+              console.log("efhweifhewf : " +JSON.stringify(req.body));
+              if(req.body.userCompanyID === "admin") {
+                const contact = await Contact.find().select("-__v").select("-_id");
   
-              console.log("contact : " +contact);
-              res.status(201).send({contact})
+                console.log("contact : " +contact);
+                res.status(201).send({contact})
+              }else{
+                const companyById = req.body.userCompanyID;
+  
+                const contact = await Contact.find({company : companyById}).select("-__v").select("-_id");
+    
+                console.log("contact : " +contact);
+                res.status(201).send({contact})
+
+              }
+
       } catch(error) {
           res.status(401).send(error)
       }
@@ -80,11 +83,19 @@ exports.autnenticationMessage = async(req, res) => {
           console.log("entering sendMessage");
           const response = [];
   
+          console.log("req : " +JSON.stringify(req.body));
           const body = req.body || {};
+
+          setTimeout(() => { 
+            console.log("wait");
+            }, 3000);
 
           const sameCompanyContacts = await Contact.find({company: req.body.company_id})
           console.log("sameCompanyContacts : " +sameCompanyContacts);
 
+          if(sameCompanyContacts.length === 0){
+            res.status(400).send({message : "You Have No Contacts To Send Message"});
+          }else{
           const sameCompanyArray = [];
           sameCompanyContacts.map((comp, i) => {
             return sameCompanyArray.push(comp.mobile_number);
@@ -122,12 +133,17 @@ exports.autnenticationMessage = async(req, res) => {
                         if(elem.includes("+")){
                             console.log("includes + ");
                             const newElement = elem.replace("+", "");
+                            try{
                                 newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
-                               }else{
-                                elem.length > response.length ? client.sendMessage(`${elem}@c.us`, text) : null;
-                               }
-                            });
-                        }
+                                res.status(200).send({message : "Message Sent"});
+                            } catch(error){
+                                console.log("error error");
+                                delete whatsappClient.newClient;
+                                res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
+                            }
+                        };
+                    })
+                  };
                     };
                   start(client);
                   // client.initialize();
@@ -137,6 +153,7 @@ exports.autnenticationMessage = async(req, res) => {
   
           await res.status(200).send({message : "Please Scan the QR Code & then send any message"});
       }
+    }
     } catch(error) {
           res.status(400).send("error:" +error.message);
       }

@@ -16,8 +16,5 @@ route.get('/groups',Auth, readGroup)
 route.get("/group/auth" , Auth, autnenticationMessage)
 route.post("/group/message" ,Auth,  message);
 
-// route.get('/secret/:userid',Auth, isAuth,isAdmin, (req, res) => {
-//     res.json('done')
-// })
 
 module.exports = route

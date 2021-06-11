@@ -98,46 +98,63 @@ exports.message = async(req, res) => {
         console.log("ID : " +ID);
         console.log("messageToSend : " +text);
         const contact = await Group.find({_id : `${ID}`}) ;
+
+        if(contact.length === 0){
+            res.status(400).send({message : "You Have No Contacts To Send Message"});
+          }else{
         const contacts = contact[0].contacts;
         const arr = contacts.split(",");
 
     if (whatsappClient.newClient) {
             console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
 
-                const start = (client)  => {
+                const start = async(client)  => {
                     console.log("start client");
                     const accurateData = contacts.indexOf(",");
                     console.log("accurate : " +accurateData);
                         if(accurateData == -1){
+
                             console.log("single massage "); 
-                            if(elem.includes("+")){
+
+                            if(contacts.includes("+")){
+
                                 console.log("includes + ");
                                 const newElement = contacts.replace("+", "");
-                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
-                                   }     
-                        contacts.length > response.length ? client.sendMessage(`${contacts}@c.us`, text) : null;
-                        }else{
-                            console.log("multiple massage ");      
-                            arr.forEach(elem => {
-                            console.log("array : " +elem);
-                            if(elem.includes("+")){
-                                console.log("includes + ");
-                                const newElement = elem.replace("+", "");
-                                    newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
-                                   }else{
-                                    elem.length > response.length ? client.sendMessage(`${elem}@c.us`, text) : null;
-                                   }
-                                });
+                                 try{
+                                    newElement.length > response.length ? await client.sendMessage(`${newElement}@c.us`, text) : null;
+                                    res.status(200).send({message : "Message Sent"});
+                                } catch(error){
+                                    console.log("error error");
+                                    delete whatsappClient.newClient;
+                                    res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
+                                }
+                        }
+                    }else{
+                        console.log("multiple massage ");      
+                        arr.forEach(elem => {
+                        console.log("array : " +elem);
+                        if(elem.includes("+")){
+                            console.log("includes + ");
+                            const newElement = elem.replace("+", "");
+                            try{
+                                newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+                                res.status(200).send({message : "Message Sent"});
+                            } catch(error){
+                                console.log("error error");
+                                delete whatsappClient.newClient;
+                                res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
                             }
                         };
-                start(client);
-                // client.initialize();
-                await res.status(200).send({message : "Message Sent"});
+                    })
+                  };
+                }
+            start(client);
       }else {
           console.log("entering else part ");
 
         await res.status(200).send({message : "Please Scan the QR Code & then send any message"});
     }
+   }
   } catch(error) {
         res.status(400).send("error:" +error.message);
     }
