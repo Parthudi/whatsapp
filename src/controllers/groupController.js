@@ -33,7 +33,7 @@ exports.signupGroup = async (req, res) => {
         const group = new Group(signUpData)
     
         await group.save()
-        res.status(201).json({'group ' : group})
+        res.status(201).json({message : "Group Created"})
 
       }catch(error){     
             console.log(error);    
@@ -44,10 +44,18 @@ exports.signupGroup = async (req, res) => {
 exports.readGroup = async(req, res) => {
       try{
               console.log("inside read groups");
-              const group = await Group.find().select("-__v");
+              console.log("req.body.userID : " +req.body.userID);
+              if(req.body.userID === "admin"){
+                const group = await Group.find().select("-__v");
   
-              console.log("group : " +group);
-              res.status(201).send(group)
+                console.log("group : " +group);
+                res.status(201).send(group)
+              }else{
+                const group = await Group.find({ user : req.body.userID }).select("-__v");
+  
+                console.log("group : " +group);
+                res.status(201).send(group)
+              }
       } catch(error) {
           res.status(401).send(error)
       }

@@ -9,7 +9,7 @@ route.post('/group/signup' ,Auth, signupGroup)
 // route.param('userid', findUserId)
 
 // route.post('/user/logout/:userid',Auth, isAuth, logoutUser)
-route.get('/groups',Auth, readGroup)
+route.post('/groups',Auth, readGroup)
 // route.get("/users/auth" , Auth, autnenticationMessage)
 // route.patch('/user/update/:userid',Auth, isAuth, update )
 // route.delete('/user/delete/:userid',Auth, isAuth, remove )

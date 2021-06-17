@@ -62,6 +62,7 @@ exports.signupUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     try {
+        console.log(JSON.stringify(req.body));
         const user = await User.findUserCredientials(req.body.email, req.body.password)
         console.log("user : " +JSON.stringify(user));
 
@@ -76,15 +77,13 @@ exports.loginUser = async (req, res) => {
             return res.status(200).send({user, token, companyName})
         }
     }catch(error){
+        console.log(error);
         if(!req.body.email) {
             res.status(401).send({error: 'Please enter Email'})
         }
         if(!req.body.password) {
             res.status(401).send({error: 'Please enter Password'})
         }       
-        if(req.body.password.length < 6) {
-            res.status(401).send({error: 'Password Should be Strong'})
-        }
         else{
             res.status(401).send({error: "Fill the correct details only! "})
         }
@@ -167,13 +166,6 @@ exports.userContacts = async(req, res) => {
             console.log("inside userContacts");
 
             const user = await User.find().select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
-            // const company = await user.map(async(u) => {
-            //     const comp =  await Company.find({_id : `${u.company}`});
-            //     console.log("comp :" +comp);
-            //     return comp.name;
-            //    }) 
-            // // const company = await Company.findById("60b8804aa02b0439a0401fbb");
-            // await console.log("company : " +company);
 
             console.log("users : " +user);
             res.status(201).send({user})
@@ -253,7 +245,7 @@ exports.message = async(req, res) => {
                             delete whatsappClient.newClient;
                             res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
                            }
-                        }  
+                        }
                 }else{
                     throw Error("You Can't Send Message to Multiple Users");
                     }

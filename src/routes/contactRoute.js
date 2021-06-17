@@ -17,13 +17,13 @@ const upload = multer({
 route.post('/contact/signup' , signupContact);
 route.post("/contact/message" ,Auth,  message);
 route.post("/download/excel"  ,Auth, excelSheet);
+route.post("/mappingsheet" ,Auth, mappingExcelSheet);
 route.post("/upload/data"  ,Auth, dbUpload);
 route.post('/contacts',Auth, readContacts);
 
 // route.post('/user/login', loginUser)
 // route.param('userid', findUserId)
 
-route.get("/mappingsheet" ,Auth, mappingExcelSheet);
 route.get("/contact/auth" , Auth, autnenticationMessage);
 // route.post("/Sheet" , getExcelSheet);
 route.get("/mappingsheet" ,Auth, mappingExcelSheet);

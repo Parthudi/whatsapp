@@ -11,13 +11,14 @@ exports.signupContact = async (req, res) => {
     try{     
         console.log("inside contact");
         console.log(req.body)
+        
         const contact = new Contact(req.body)
     
         await contact.save()
         res.status(201).json({'contact ' : contact})
 
       }catch(error){     
-            console.log(error);    
+            console.log("error printing" +error);    
             res.status(401).json({error: "Fill the details Correctly"})
       }
 }
@@ -159,25 +160,7 @@ exports.autnenticationMessage = async(req, res) => {
       }
   }
 
-exports.mappingExcelSheet = async(req, res) => {
-    try{
-        var workbook = XLSX.readFile(`data/ContactData.xlsx`);
-                var sheet_name_list = workbook.SheetNames;
 
-                var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-                console.log(xlData);
-                const headerData = [];
-                await xlData.forEach((data) => {
-                    headerData.push(Object.keys(data));
-                })
-                console.log(headerData[0]);
-                res.status(200).send({header : headerData[0]});
-
-    }catch(error){
-        res.status(401).send({error : "Header Not Found"});
-    }
-}
-  
 exports.excelSheet = async(req, res) => {
     try {
         console.log("inside excel sheet");
@@ -195,51 +178,32 @@ exports.excelSheet = async(req, res) => {
                 if(err){
                     res.status(401).send({message: "file failed please try again"})
                 } else{
-                    res.status(200).send({message: "file Uploaded"});
+                    res.status(200).send({message: "file Uploaded", fileName: `${file.excelsheet.name}`});
                 }
-           });
-          
-            // let data = [jsData];
-
-            // //   contact.forEach(dat => {
-            // //       console.log("dat dat : " +dat);
-            // //       const companyStr =  dat.company.toString();
-            // //       const mobileStr = dat.mobile_number.toString();
-            //     //   data.push(jsData);
-            // //    })
-            //       const headingColumnNames = [
-            //               "Company_ID",
-            //               "Email",
-            //               "Mobile_Number",
-            //               "Country_Code"
-            //           ]
-      
-            //           //Write Column Title in Excel file
-            //           let headingColumnIndex = 1;
-            //           headingColumnNames.forEach(heading => {
-            //               ws.cell(1, headingColumnIndex++)
-            //                   .string(heading)
-            //           });
-      
-            //           //Write Data in Excel file
-            //           let rowIndex = 2;
-            //           data.forEach( record => {
-            //               let columnIndex = 1;
-            //               Object.keys(record ).forEach(columnName =>{
-            //                   ws.cell(rowIndex,columnIndex++)
-            //                       .string(record [columnName])
-            //               });
-            //               rowIndex++;
-            //           }); 
-
-            //   wb.write('makingExcel.xlsx');
-            // res.status(201).send({message : "Excel File Is Ready"})
-
-        //    console.log("file file file: " +file);
-
+           });   
      }
     }catch(err) {
         res.status(401).send({err : err.message});
+    }
+}
+
+exports.mappingExcelSheet = async(req, res) => {
+    try{
+        console.log("filename mapping : " +req.body.file);
+        var workbook = XLSX.readFile(`data/${req.body.file}`);
+                var sheet_name_list = workbook.SheetNames;
+
+                var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+                console.log(xlData);
+                const headerData = [];
+                await xlData.forEach((data) => {
+                    headerData.push(Object.keys(data));
+                })
+                console.log(headerData[0]);
+                res.status(200).send({header : headerData[0]});
+
+    }catch(error){
+        res.status(401).send({error : "Header Not Found"});
     }
 }
 
@@ -249,7 +213,7 @@ exports.dbUpload = async(req, res) => {
 
         console.log("req : " +req.body);
 
-        var workbook = XLSX.readFile(`data/ContactData.xlsx`);
+        var workbook = XLSX.readFile(`data/${req.body.filename}`);
         var sheet_name_list = workbook.SheetNames;
 
         var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
@@ -258,7 +222,8 @@ exports.dbUpload = async(req, res) => {
 
         await xlData.forEach((data) => {
             headerData.push(Object.keys(data));
-        })
+        });
+
         console.log(headerData[0]);
 
         console.log("request : " +JSON.stringify(req.body));
@@ -272,48 +237,13 @@ exports.dbUpload = async(req, res) => {
 
         xlData.forEach(async(data) => {
             let allExcelValues = []
-            // let newColumns = [];
 
             console.log("data : " +JSON.stringify(data));
             const valuesOfAll = Object.values(data);
             console.log("values of all : " +valuesOfAll);
             allExcelValues.push({valuesOfAll});
-            // console.log("allExcel Values :" +allExcelValues);
-            // console.log("iniiiiiiiiiii val : " + JSON.stringify(allExcelValues[0].valuesOfAll[0]));
-            // console.log("seco val : " + JSON.stringify(allExcelValues[0].valuesOfAll[1]));
-            // console.log("tho val : " + JSON.stringify(allExcelValues[0].valuesOfAll[2]));
-
-            // newColumns.push({allValues}) ;
-            // console.log("all values .... : " +allValues);
-            // console.log("first all values : " +allValues[0]);
-            // console.log("newColumns : " +JSON.stringify(newColumns));
-
-            // let initialValues = allExcelValues[0].valuesOfAll[0];
-            // console.log("initialValues : "+initialValues);
-
-            // var secondDat = allValues[1];
-            // console.log("secondData : " +secondData);
-            // let secondValues = allExcelValues[0].valuesOfAll[1];
-            // console.log("secondValues : " +secondValues);
-
-            // var thirdDat = allValues["2"];
-            // console.log("thirdData : " +thirdData);
-
-            // let thirdValues = allExcelValues[0].valuesOfAll[2];
-            // console.log("thirdValues : " +thirdValues);
 
             console.log("extractCompanyID :"+extractCompanyID);
-
-            // let firstlatestColumns = newColumns[0].allValues[0];
-            // console.log("firstlatestColumns : " +firstlatestColumns); 
-            // console.log(typeof firstlatestColumns); 
-            // let secondlatestColumns = newColumns[0].allValues[1];
-            // console.log("secondlatestColumns : " +secondlatestColumns);
-            // console.log(typeof secondlatestColumns); 
-
-            // let thirdlatestColumns = newColumns[0].allValues[2];
-            // console.log("thirdlatestColumns : " +thirdlatestColumns);
-            // console.log(typeof thirdlatestColumns); 
 
            let first = allValues[0];
            let second = allValues[1];
@@ -341,6 +271,9 @@ exports.dbUpload = async(req, res) => {
         res.status(401).send({message : "invalid Contacts Data"});
     }
 }
+
+
+  
 
 // exports.getExcelSheet = async(req, res) => {
 //     try{
