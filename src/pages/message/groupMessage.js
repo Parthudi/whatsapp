@@ -36,13 +36,16 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
   
   const allGroups = async() => {
     try{
+    const userID = isAuth.user.role === "user" ? isAuth.user._id : "admin" ;;
+
         setIsLoading(true);
         const allGroups = await fetch("http://localhost:4000/groups", {
-                method: "GET",
+                method: "POST",
                 headers: {
                 "Authorization" : `Bearer ${isAuth.token}`,
                 "Content-Type": "application/json"
-                  }
+                  },
+                body: JSON.stringify({userID})
               }).then(res => res.json()) 
   
               console.log("allGroups : " +JSON.stringify(allGroups));
@@ -127,7 +130,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
       <PageTitle title="Message" />
       <Grid container spacing={4}>
         
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={showQr == true ? 12 : 8}>
           <Widget title="SEND MESSAGE" disableWidgetMenu>
           { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}} >
                             <CircularProgress color="secondary" />
@@ -137,6 +140,13 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                     Please fill the credentials properly  :(
                 </Typography>
           </Fade>
+
+          {allgroups && allgroups.length <1 ? 
+                <Fade in={error}>
+                  <Typography color="secondary" className={classes.errorMessage}>
+                      Please Create Group First !!
+                  </Typography>
+                </Fade> : null}
 
         { showQr ? 
                <Button

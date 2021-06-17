@@ -112,7 +112,7 @@ const fetchCountryCode = async() => {
       <PageTitle title="Message" />
       <Grid container spacing={4}>
         
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={showQr == true ? 12 : 8}>
           <Widget title="SEND MESSAGE" disableWidgetMenu>
           { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}}>
                             <CircularProgress color="secondary" />

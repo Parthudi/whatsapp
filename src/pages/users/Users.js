@@ -8,13 +8,6 @@ import {
 // components
 import PageTitle from "../../components/PageTitle/PageTitle";
 
-
-const useStyles = makeStyles(theme => ({
-  tableOverflow: {
-    overflow: 'auto'
-  }
-}))
-
 const Tables = (props) => {
 
 const [dataa, setDataa] = useState([]);

@@ -10,14 +10,12 @@ import {
   Fade,
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
-import classnames from "classnames";
 
 // styles
 import useStyles from "./styles";
 
 // logo
 import logo from "./logo.svg";
-import google from "../../images/google.svg";
 
 // context
 import { useUserDispatch, LoginUser, SignupUser, SignupCompany } from "../../context/UserContext";
@@ -30,45 +28,26 @@ function Login(props) {
 
   // local
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errorr, setError] = useState("");
   const [activeTabId, setActiveTabId] = useState(0);
   
-  // const [nameValue, setNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("parmarparth597@gmail.com");
   const [passwordValue, setPasswordValue] = useState("parthu");
-  // const [signupEmailValue, setSignupEmailValue] = useState("");
-  // const [signuppasswordValue, setSignupPasswordValue] = useState("");
-  // const [roleValue , setRoleValue] = useState("")
-  // const [companyValue, setCompanyValue] = useState("")
 
-  // const [forgotEmailValue, setForgotEmailValue] = useState("")
-  // const [forgotPasswordValue, setForgotPasswordValue] = useState("")
-
-  // const [companyName, setCompanyName] = useState("Vistaura")
-  // const [address1, setAddress1] = useState("202-A avadh residency")
-  // const [address2, setAddress2] = useState(" in yoginagar township")
-  // const [state, setState] = useState("gujarat")
-  // const [city, setCity] = useState("vadodara")
-  // const [pincode, setPincode] = useState("390002")
-  // const [gstin, setGstin] = useState("7865452")
-
-  // const onClickHandler = (userDispatch,emailValue,passwordValue) => {
-  //     LoginUser(userDispatch,emailValue,passwordValue).then((err, data) => {
-  //       if(err){
-  //          console.log("Error : " +data.error);
-  //          setError(true);
-  //          setIsLoading(false);
-  //       }else{
-  //          setError(true);
-  //          setIsLoading(false);
-  //          setVisitUsers(visitUsers + 1);
-  //          console.log(visitUsers);
-  //         <Dashboard visitedUsers={visitUsers} />;
-  //          localStorage.setItem('TOKEN', JSON.stringify(data));
-  //          props.history.push('/app/dashboard')
-  //       }
-  //     })
-  //  }
+  const clickHandler = (userDispatch,emailValue,passwordValue) => {
+      LoginUser(userDispatch,emailValue,passwordValue).then((data) => {
+        if(data.error){
+           console.log("Error : " +data.error);
+           setError("User Not Found ! Please Fill Correct Details Only :( ");
+           console.log("errrrrrrror : " +errorr);
+           setIsLoading(false);
+        }else{
+          console.log("no eerrorr")
+           setIsLoading(false);
+           props.history.push('/app/dashboard')
+        }
+      })
+   }
 
   return (
     <React.Fragment>
@@ -95,23 +74,27 @@ function Login(props) {
             <React.Fragment>
               {new Date().getHours() <= 12 ? 
               <Typography variant="h1" className={classes.greeting}>
-                Good Morning, User 
+                Good Morning User 
               </Typography>     : 
               (
                 new Date().getHours() > 12 && new Date().getHours() <= 17 ?
                 <Typography variant="h1" className={classes.greeting}>
-                  Good Afternoon, User 
+                  Good Afternoon User 
                 </Typography>       :
                 <Typography variant="h1" className={classes.greeting}>
-                 Good Evening, User 
+                 Good Evening User 
             </Typography>
               ) }
               
-              <Fade in={error}>
+            {errorr && errorr.length > 1 ? (
+              console.log("showing error"),
+              <Fade in={errorr}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
-                </Typography>
-              </Fade>
+                   {errorr}
+                </Typography> 
+              </Fade>) : console.log("null error")} 
+
+<br/><br/><br/>
               <TextField
                 id="email"
                 InputProps={{
@@ -151,13 +134,11 @@ function Login(props) {
                         emailValue.length === 0 || passwordValue.length === 0
                       }
                       onClick={() =>
-                        LoginUser(
+                        clickHandler(
                           userDispatch,
                           emailValue,
                           passwordValue,
                           props.history,
-                          setIsLoading,
-                          setError,
                         )
                       }
                       variant="contained"

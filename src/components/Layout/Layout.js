@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import classnames from "classnames";
 import {Box, IconButton, Link} from '@material-ui/core'
-import Icon from '@mdi/react'
 import { signOut, useUserDispatch } from "../../context/UserContext";
 
 import { Typography } from "../Wrappers";
@@ -90,7 +89,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               {isAuth.user.role === "admin" ? <Route path="/app/company/register" component={CompanyRegister} /> : null }
               <Route path="/app/group/register" component={CreateGroups} />
               {/* <Route path="/app/notifications" component={Notifications} /> */}
-              <Route path="/app/logout" render={() => signOut(userDispatch, props.history) } />
+              <Route path="/app/logout" render={() => signOut(userDispatch, props.history, isAuth.token, isAuth.user._id) } />
               <Route path="/app/user/delete" render={() => <h1> User Deleted </h1>} />
               <Route path="/app/profile" component={Profile} />
 
@@ -114,9 +113,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
              <br></br>
              <div className={classes.footer}>
-              {/* <Typography color="primary" className={classes.copyright}>
-                © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistanova.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
-              </Typography> */}
+              <Typography color="primary" className={classes.copyright}>
+                © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistanova.com/" rel="noopener noreferrer" target="_blank"> Vistanova </a>, LLC. All rights reserved.
+              </Typography>
             </div>
           </div>
         </>

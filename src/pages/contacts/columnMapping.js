@@ -22,12 +22,14 @@ function ColumnMapping(props) {
 
   const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
   
-  const mappingColumns = async() => {
+  const mappingColumns = async(file) => {
     const response = await fetch("http://localhost:4000/mappingsheet",{
-            method: "GET",
+            method: "POST",
             headers: {
                 "Authorization" : `Bearer ${isAuth.token}`,
-            }
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({file}) 
         }).then(res => res.json());
 
         console.log("response : " +response.header);
@@ -35,7 +37,8 @@ function ColumnMapping(props) {
   }
 
   useEffect(() => {
-      mappingColumns();
+    console.log("props.filename +" + props.filename);
+      mappingColumns(props.filename);
   }, []);
 
   const handleonChange = (e,i) => {
@@ -54,9 +57,6 @@ function ColumnMapping(props) {
   const uploadData = async() => {
     try{
       setIsLoading(true);
-      let newColumn0 = column["0"] ;
-      let newColumn1 = column["1"] ;
-      let newColumn2 = column["2"] ;
       
       const response = await fetch("http://localhost:4000/upload/data",{
             method: "POST",
@@ -64,7 +64,7 @@ function ColumnMapping(props) {
                 "Authorization" : `Bearer ${isAuth.token}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({newColumn0 : email, newColumn1 : mobile , newColumn2 : country, originalCompanyID : isAuth.user.company})
+            body: JSON.stringify({newColumn0 : email, newColumn1 : mobile , newColumn2 : country, filename:props.filename , originalCompanyID : isAuth.user.company})
         }).then(res => res.json());
 
         console.log("uploading response : " +JSON.stringify(response));

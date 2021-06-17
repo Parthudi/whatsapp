@@ -23,7 +23,7 @@ function CreateGroups(props) {
   // local
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [message, setMessage] = useState("");
   const [contacts, setContacts] = useState("");
   const [name, setName] = useState("");
   const [dataa, setDataa] = useState([]);
@@ -73,10 +73,12 @@ function CreateGroups(props) {
                  if(response.error) {
                      setIsLoading(false);
                      setError(true);
+                     setMessage(response.error);
                  }else{
                      setIsLoading(false);
                      setError(false);
                      setName("");
+                     setMessage(response.message);
                  }
           })
     }
@@ -108,12 +110,18 @@ function CreateGroups(props) {
               <Typography variant="h2" className={classes.subGreeting}>
                  Group
               </Typography>
-              <Fade in={error}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
-                </Typography>
-              </Fade>
- 
+
+              {message && message.includes("Created") ?
+                   <Fade in={message}>
+                    <Typography color="primary" className={classes.errorMessage}>
+                        {message}
+                    </Typography>
+                 </Fade> : (<Fade in={message}>
+                    <Typography color="secondary" className={classes.errorMessage}>
+                        {message}
+                    </Typography>
+                 </Fade>)  }
+             
               <TextField
                 id="contact"
                 InputProps={{

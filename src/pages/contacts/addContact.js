@@ -20,7 +20,7 @@ function AddContacts(props) {
 
   // local
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   const [allcompany, setAllCompany] = useState([]);
   const [company, setCompany] = useState("");
@@ -29,25 +29,35 @@ function AddContacts(props) {
   const [email , setEmail] = useState("")
  
   const addContactsHandler = async(company,mobile,countrycode,email) => {
-       setIsLoading(true);
+    try{
+      setIsLoading(true);
        
-     const contactRegister = await fetch(`http://localhost:4000/contact/signup`,{
-            method: "POST",
-            headers: {
-                      Accept:  "application/json",
-                    "Content-Type": "application/json"
-            },
-            body: JSON.stringify({company ,mobile_number : mobile, country_code : countrycode, email})
-          }).then(response => response.json());
-
-    console.log("contactRegister :" +contactRegister);
-    setIsLoading(false);
-    setAllCompany("")
-    setCompany("")
-    setMobile("")
-    setCountryCode("")
-    setEmail("")
-  }
+      const contactRegister = await fetch(`http://localhost:4000/contact/signup`,{
+             method: "POST",
+             headers: {
+                       Accept:  "application/json",
+                     "Content-Type": "application/json"
+             },
+             body: JSON.stringify({company ,mobile_number : mobile, country_code : countrycode, email})
+           }).then(response => response.json());
+ 
+           if(contactRegister.error) {
+             throw Error("Fill the Valid Details Only");
+           }
+          console.log("contactRegister :" +JSON.stringify(contactRegister));
+          setIsLoading(false);
+          setAllCompany("")
+          setCompany("")
+          setMobile("")
+          setCountryCode("")
+          setEmail("")
+   }catch(error){
+     console.log("JSON.setr : " +JSON.stringify(error));
+      setError(error.message);
+      setIsLoading(false);
+   }
+}
+    
 
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
@@ -79,15 +89,20 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               <Typography variant="h2" className={classes.subGreeting}>
                  Contacts 
               </Typography>
-              <Fade in={error}>
+
+              {error && error.length > 6 ? (
+                <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                    {error}
                 </Typography>
-              </Fade>
+              </Fade>    
+              )  : null }
+
+<br/><br/><br/>
               {isAuth.user.role === "user" ?
                   <div>
                   <InputLabel id="company"> Company </InputLabel>
-                    <Select labelId="company" id="company" value={isAuth.companyName} onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
+                    <Select labelId="company" id="company" value={company} onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
                       <MenuItem  value={isAuth.user.company}> {isAuth.companyName}  </MenuItem>
                     </Select> 
                 </div>    :

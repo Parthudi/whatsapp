@@ -92,9 +92,6 @@ async function SignupUser(name, email, password, role, company) {
       }
 
 async function LoginUser(dispatch, email, password, history, setIsLoading, setError) {
-  setError(false);
-  setIsLoading(true);
-
   try{
       const data = await fetch(`http://localhost:4000/user/login`,{
                       method: "POST",
@@ -104,35 +101,36 @@ async function LoginUser(dispatch, email, password, history, setIsLoading, setEr
                       },
                       body: JSON.stringify({email, password})
                     }).then(response => response.json()) ;
+
             if(data.error){
               console.log(":errorr");
               throw new Error();
             }else {
                localStorage.setItem('TOKEN', JSON.stringify(data));
-            setError(false)
-            setIsLoading(false)
-          // setVisitsUser(VisitsUser +1);
-          // console.log("set users : " +VisitsUser);
-            dispatch({ type: 'LOGIN_SUCCESS' })
-              
-            history.push('/app/dashboard')
-        return(
-          setError(true),
-          setIsLoading(false) 
-        )
+              dispatch({ type: 'LOGIN_SUCCESS' })
+              return data;
       }     
   }catch(error) {
     console.log("catch");
     dispatch({ type: "LOGIN_FAILURE" });
-    setError(true);
-    setIsLoading(false) 
+    return ({error: true }) ;
   }
 }
 
-function signOut(dispatch, history) {
+const signOut = async(dispatch, history, token, userID) => {
+
+  const response = await fetch(`http://localhost:4000/user/logout/${userID}`,{
+                    method: "POST",
+                    headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                    },
+                  }).then(response => response.json()) ;
+
   localStorage.removeItem("TOKEN");
+
   dispatch({ type: "SIGN_OUT_SUCCESS" });
-  history.push("/login");
+  window.location.reload();
 }
 
 export const isAuthenticated = () => {

@@ -20,11 +20,8 @@ import useStyles from "./styles";
 // context
 import { useUserDispatch, SignupUser } from "../../context/UserContext";
 
-function UserRegister(props) {
+const UserRegister = (props) => {
   var classes = useStyles();
-
-  // global
-  var userDispatch = useUserDispatch();
 
   // local
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +79,7 @@ useEffect(() => {
   }
 
   return (
-    <React.Fragment>
+    <>
     <Grid container className={classes.container}>
       <div className={classes.formContainer}>
         <div className={classes.form}>
@@ -98,13 +95,7 @@ useEffect(() => {
                     {error}
                 </Typography>
               </Fade>    
-              )  : 
-                <Fade in={error}>
-                  <Typography color="secondary" className={classes.errorMessage}>
-                    Something is wrong with your login or password :(
-                  </Typography>
-                </Fade>
-              }
+              )  : null }
               
               <TextField
                 id="name"
@@ -119,6 +110,7 @@ useEffect(() => {
                 margin="normal"
                 placeholder="Full Name"
                 type="text"
+                autoComplete='off'
                 fullWidth
               />
               <TextField
@@ -134,6 +126,7 @@ useEffect(() => {
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
+                autoComplete='off'
                 fullWidth
               />
               <TextField
@@ -149,6 +142,7 @@ useEffect(() => {
                 margin="normal"
                 placeholder="Password"
                 type="password"
+                autoComplete='off'
                 fullWidth
               />
 <br/>
@@ -229,13 +223,10 @@ useEffect(() => {
               </Button> */}
             </React.Fragment>
 
-        </div> <br></br>
-        {/* <Typography color="primary" className={classes.copyright}>
-        © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistaura.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
-        </Typography> */}
+        </div> 
       </div>
     </Grid>
-    </React.Fragment>
+    </>
   );
 }
 
