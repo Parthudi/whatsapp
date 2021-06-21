@@ -1,39 +1,47 @@
 const Group= require('../models/groupModel')
-const {Client} = require("whatsapp-web.js");
-const client = new Client();
-const whatsappClient = {};
+const Contact = require("../models/contactModel")
+const Message = require("../models/messageModel")
+// const {Client} = require("whatsapp-web.js");
+// const client = new Client();
+// const whatsappClient = {};
 
 exports.signupGroup = async (req, res) => {
     try{     
         console.log("inside signup group");
-        console.log(req.body)
+        console.log("body of group : " + JSON.stringify(req.body));
 
-        const contacts = req.body.contacts;
+            const contactsId = req.body.contacts;
+      
+            let signUpData = {};
+            signUpData["user"] = req.body.user,
+            signUpData["name"] = req.body.name,
+            signUpData["contacts"] =  contactsId,
+            signUpData["createdBy"] = req.body.user
 
-        let ids = "" ;
-            contacts.forEach((reqId, index) => {
-                if(index === 0) {
-                    ids += `${reqId}`;
-                }else{
-                    ids += `,${reqId}`;
-                }        
-            });
-            ids += "" ;
-        console.log(" id : " +ids);
-        console.log(" type of id : " +typeof ids);
-        const ContactNumbers = ids.toString(); 
+            console.log(JSON.stringify(signUpData));
 
-        let signUpData = {};
-        signUpData["user"] = req.body.user,
-        signUpData["name"] = req.body.name,
-        signUpData["contacts"] =  ContactNumbers,
+            const group = new Group(signUpData)
+        
+            await group.save()
+            res.status(201).json({message : "Group Created"})
+        // })
 
-        console.log(JSON.stringify(signUpData));
+        // const contacts = req.body.contacts;
 
-        const group = new Group(signUpData)
-    
-        await group.save()
-        res.status(201).json({message : "Group Created"})
+        // let ids = "" ;
+        //     contacts.forEach((reqId, index) => {
+        //         if(index === 0) {
+        //             ids += `${reqId}`;
+        //         }else{
+        //             ids += `,${reqId}`;
+        //         }        
+        //     });
+        //     ids += "" ;
+        // console.log(" id : " +ids);
+        // console.log(" type of id : " +typeof ids);
+        // const ContactNumbers = ids.toString(); 
+
+       
 
       }catch(error){     
             console.log(error);    
@@ -61,38 +69,31 @@ exports.readGroup = async(req, res) => {
       }
   }
 
-  exports.autnenticationMessage = async(req, res) => {
-    try {
-        console.log("Checking Auth");
+//   exports.autnenticationMessage = async(req, res) => {
+//     try {
+//         console.log("Checking Auth");
 
-    if (whatsappClient.newClient) {
-            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
-            await res.status(200).send({user :"User Is Authenticated"});
-      }else {
-        client.on('authenticated', (session) => {
-            whatsappClient.newClient = session;
-         });
+//     if (whatsappClient.newClient) {
+//             console.log("whatsappClient.newClient line 134 : " +JSON.stringify(global.whatsappClient.newClient));
+//             await res.status(200).send({user :"User Is Authenticated"});
+//       }else {
+//         client.on('authenticated', (session) => {
+//             global.whatsappClient.newClient = session;
+//          });
         
-       if(whatsappClient.newClient == null || undefined) {
-        client.on("qr", async(qr) => {
-            console.log("QR RECEIVED : " +qr);
-            await res.status(200).send(JSON.stringify(qr));
-        });
-       }
+//        if(global.whatsappClient.newClient == null || undefined) {
+//         client.on("qr", async(qr) => {
+//             console.log("QR RECEIVED : " +qr);
+//             await res.status(200).send(JSON.stringify(qr));
+//         });
+//        }
         
-    client.on("ready", async() => {
-        console.log("client is ready");
-        const start = (client)  => {
-                };
-        start(client);
-        });
-        client.initialize();
-    }
-  } catch(error) {
-        res.status(400).send("error:" +error.message);
-    }
-}
-
+//         client.initialize();
+//     }
+//   } catch(error) {
+//         res.status(400).send("error:" +error.message);
+//     }
+// }
 
 exports.message = async(req, res) => {
     try {
@@ -100,63 +101,62 @@ exports.message = async(req, res) => {
         const response = [];
 
         const body = req.body || {};
+        console.log("body : " +JSON.stringify(body));
+
         const ID = body.group;
         const text = body.message;
 
-        console.log("ID : " +ID);
-        console.log("messageToSend : " +text);
-        const contact = await Group.find({_id : `${ID}`}) ;
+        const findinGroup = await Group.find({_id:ID}).populate("contacts");
+        // console.log("findinGroup : " +findinGroup);
 
-        if(contact.length === 0){
+        const contactID = await Group.find({_id:ID});
+        console.log("contactID : " +contactID[0].contacts);
+        console.log("contactID specific ID : " +contactID.contacts);
+
+        let messageRegistrationData = {};
+        messageRegistrationData["company"] = req.body.companyID;
+        messageRegistrationData["user"] = req.body.userID;
+        messageRegistrationData["group"] = ID;
+        messageRegistrationData["contacts"] = contactID[0].contacts;
+        messageRegistrationData["message"] = text;
+        messageRegistrationData["createdBy"] = req.body.userID;
+
+        console.log("messageRegistrationData : " + JSON.stringify(messageRegistrationData));
+
+        const allContacts = [];
+        findinGroup[0].contacts.map((contact) => {
+          console.log("comming : " + contact.country_code+contact.mobile_number);
+           return allContacts.push(contact.country_code+contact.mobile_number);
+        })
+
+        if(allContacts.length === 0){
+            console.log("empty contacts");
             res.status(400).send({message : "You Have No Contacts To Send Message"});
-          }else{
-        const contacts = contact[0].contacts;
-        const arr = contacts.split(",");
+        }else{
+          
+        if(global.whatsappClient.newClient) {
+           console.log("whatsappClient.newClient line 134 : " +JSON.stringify(global.whatsappClient.newClient));
 
-    if (whatsappClient.newClient) {
-            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
-
-                const start = async(client)  => {
-                    console.log("start client");
-                    const accurateData = contacts.indexOf(",");
-                    console.log("accurate : " +accurateData);
-                        if(accurateData == -1){
-
-                            console.log("single massage "); 
-
-                            if(contacts.includes("+")){
-
-                                console.log("includes + ");
-                                const newElement = contacts.replace("+", "");
-                                 try{
-                                    newElement.length > response.length ? await client.sendMessage(`${newElement}@c.us`, text) : null;
-                                    res.status(200).send({message : "Message Sent"});
-                                } catch(error){
-                                    console.log("error error");
-                                    delete whatsappClient.newClient;
-                                    res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
-                                }
-                        }
-                    }else{
-                        console.log("multiple massage ");      
-                        arr.forEach(elem => {
-                        console.log("array : " +elem);
-                        if(elem.includes("+")){
-                            console.log("includes + ");
-                            const newElement = elem.replace("+", "");
-                            try{
-                                newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
-                                res.status(200).send({message : "Message Sent"});
-                            } catch(error){
-                                console.log("error error");
-                                delete whatsappClient.newClient;
-                                res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
+            const start = async(client)  => {
+                allContacts.forEach(async(elem) => {
+                    console.log("array : " +elem);
+                    if(elem.includes("+")){
+                        console.log("includes + ");
+                        const newElement = elem.replace("+", "");
+                      try{
+                            newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
+                        } catch(error){
+                            console.log("error error");
+                            delete global.whatsappClient.newClient;
+                            res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
                             }
                         };
                     })
-                  };
+                    res.status(200).send({message : "Message Sent"});
                 }
-            start(client);
+            start(global.client);
+            const messageRegister = new Message(messageRegistrationData);
+            await messageRegister.save()
       }else {
           console.log("entering else part ");
 

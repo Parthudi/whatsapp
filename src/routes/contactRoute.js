@@ -1,6 +1,7 @@
 const express = require('express')
 const route = new express.Router()
-const {signupContact, readContacts, autnenticationMessage, message, excelSheet, mappingExcelSheet, dbUpload} = require('../controllers/contactController')
+const {signupContact, readContacts, message, excelSheet, mappingExcelSheet, dbUpload} = require('../controllers/contactController')
+const {autnenticationMessage} = require("../controllers/qrAuthentication");
 const {Auth, isAuth, isAdmin } = require('../middleware/auth')
 const multer  = require('multer')
 

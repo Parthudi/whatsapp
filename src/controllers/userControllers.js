@@ -1,8 +1,11 @@
 const User = require('../models/userModel')
 const Company = require("../models/companyModel")
+const Contact = require("../models/contactModel")
+const Message = require("../models/messageModel")
 const {Client} = require("whatsapp-web.js");
-const client = new Client();
-const whatsappClient = {};
+// const client = new Client();
+// const whatsappClient = {};
+// import {whatsappClient} from "../qrAuthentication"
 
 exports.findUserId= async (req, res, next, id) => {
     const user = await User.findById(id)
@@ -25,6 +28,7 @@ exports.signupUser = async (req, res) => {
             createUser["email"] = req.body.email;
             createUser["password"] = req.body.password;
             createUser["role"] = req.body.role;
+            createUser["createdBy"] = req.body.userID,
 
             console.log(JSON.stringify(createUser));
             const user = new User(createUser);
@@ -41,8 +45,8 @@ exports.signupUser = async (req, res) => {
         if(!req.body.name) {
             res.status(401).json({error: 'Please enter Name'})
         }
-        if( 5>req.body.name.length || req.body.name.length>20) {
-            res.status(401).json({error: "Name must be 6 to 20 digits"})
+        if( req.body.name.length < 4 || req.body.name.length > 20 ) {
+            res.status(401).json({error: "Name must be 4 to 20 digits"})
         }
         if(!req.body.email) {
             res.status(401).json({error: 'Please enter Email'})
@@ -174,39 +178,30 @@ exports.userContacts = async(req, res) => {
     }
 }
 
+// exports.autnenticationMessage = async(req, res) => {
+//     try {
+//         console.log("Checking Auth");
 
-exports.autnenticationMessage = async(req, res) => {
-    try {
-        console.log("Checking Auth");
-
-    if (whatsappClient.newClient) {
-            console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
-            await res.status(200).send({user :"User Is Authenticated"});
-      }else {
-        client.on('authenticated', (session) => {
-            whatsappClient.newClient = session;
-         });
+//     if (global.whatsappClient.newClient) {
+//             console.log("whatsappClient.newClient line 134 : " +JSON.stringify(global.whatsappClient.newClient));
+//             await res.status(200).send({user :"User Is Authenticated"});
+//       }else {
+//         client.on('authenticated', (session) => {
+//             global.whatsappClient.newClient = session;
+//          });
         
-       if(whatsappClient.newClient == null || undefined) {
-        client.on("qr", async(qr) => {
-            console.log("QR RECEIVED : " +qr);
-            await res.status(200).send(JSON.stringify(qr));
-        });
-       }
-        
-    client.on("ready", async() => {
-        console.log("client is ready");
-        const start = (client)  => {
-                };
-        start(client);
-        });
-        client.initialize();
-    }
-  } catch(error) {
-        res.status(400).send("error:" +error.message);
-    }
-}
-
+//        if(global.whatsappClient.newClient == null || undefined) {
+//         client.on("qr", async(qr) => {
+//             console.log("QR RECEIVED : " +qr);
+//             await res.status(200).send(JSON.stringify(qr));
+//         });
+//        }
+//         client.initialize();
+//     }
+//   } catch(error) {
+//         res.status(400).send("error:" +error.message);
+//     }
+// }
 
 exports.message = async(req, res) => {
     try {
@@ -214,18 +209,38 @@ exports.message = async(req, res) => {
         const response = [];
 
         const body = req.body || {};
-        const contacts = body.contact;
+        const countryCode = body.countrycode;
+        const newContact = body.contact;
+
+        const contacts = countryCode+newContact;
         const text = body.message;
         const arr = contacts.split(",");
       
+        const findContact = await Contact.find({mobile_number : newContact});
+
+        if(findContact.length <1){
+            throw Error("You Can not Send Message To Unknown Users !!!")
+        }
+        const  contactID = findContact[0]._id ;
+
         console.log("contactToSend : " +contacts);
         console.log("older array  : " +arr);
         console.log("messageToSend : " +text);
 
-    if (whatsappClient.newClient) {
-        console.log("whatsappClient.newClient line 134 : " +JSON.stringify(whatsappClient.newClient));
+        let messageRegistrationData = {};
+        messageRegistrationData["company"] = req.body.companyID;
+        messageRegistrationData["user"] = req.body.userID;
+        messageRegistrationData["contacts"] = contactID;
+        messageRegistrationData["message"] = text;
+        messageRegistrationData["createdBy"] = req.body.userID;
 
-        const start = async(client)  => {
+        console.log("messageRegistrationData : " + JSON.stringify(messageRegistrationData));
+
+    console.log("whatsappClient.newClient  : " +JSON.stringify(global.whatsappClient.newClient));
+    if (global.whatsappClient.newClient) {
+        console.log("whatsappClient.newClient in userController : " +JSON.stringify(global.whatsappClient.newClient));
+       
+        const start = async(client) => {
             console.log("start client");
             const accurateData = contacts.indexOf(",");
             console.log("accurate : " +accurateData);
@@ -238,11 +253,15 @@ exports.message = async(req, res) => {
                     console.log("includes + ");
                         const newElement = await contacts.replace("+", "");
                         try{
-                            newElement.length > response.length ? await client.sendMessage(`${newElement}@c.us`, text) : null;
-                            res.status(200).send({message : "Message Sent"});
+                            console.log("newElement : " +newElement);
+                            console.log("text : " +text);
+                            console.log("newElement.length : " +newElement.length);
+                            console.log("response.length : " +response.length);
+
+                            newElement.length > response.length ? client.sendMessage(`${newElement}@c.us`, text) : null;
                         } catch(error){
                             console.log("error error");
-                            delete whatsappClient.newClient;
+                            delete global.whatsappClient.newClient;
                             res.status(400).send({message : "Session Is Closed Please Try After Reloading The Page"});
                            }
                         }
@@ -250,7 +269,10 @@ exports.message = async(req, res) => {
                     throw Error("You Can't Send Message to Multiple Users");
                     }
                 };
-            start(client);
+            start(global.client);
+            const messageRegister = new Message(messageRegistrationData);
+            await messageRegister.save()
+            res.status(200).send({message : "Message Sent"});
       }else {
           console.log("entering else part ");
           throw Error("Please Scan the QR Code & then send any message");

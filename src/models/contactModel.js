@@ -8,8 +8,13 @@ const contactSchema = new mongoose.Schema({
         ref: 'company',                 
         required: true
     },
+    name:{
+        type: String,
+        required: true,
+    },
     mobile_number: {
         type: Number,
+        unique: true,
         required: true,
           },
     country_code: {
@@ -29,6 +34,11 @@ const contactSchema = new mongoose.Schema({
                 }
             }
         },
+    createdBy: {
+        type: ObjectId,
+        ref : "userstasks",
+        required: true,   
+      },
     createdAt: {
         type: Date, 
         required: true, 

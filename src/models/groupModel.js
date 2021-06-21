@@ -12,9 +12,15 @@ const groupSchema = new mongoose.Schema({
         required: true
     },
     contacts: {
-        type: String,
+        type: [ObjectId],
+        ref: "contact",
         required: true
     },
+    createdBy: {
+        type: ObjectId,
+        ref : "userstasks",
+        required: true,   
+      },
     createdAt: {
         type: Date, 
         required: true, 

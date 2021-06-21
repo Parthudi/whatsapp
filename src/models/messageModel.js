@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema
-const validator = require('validator')
 
-const contactSchema = new mongoose.Schema({
+const messageSchema = new mongoose.Schema({
     company: {
         type: ObjectId,                  
         ref: 'company',                 
@@ -10,20 +9,25 @@ const contactSchema = new mongoose.Schema({
     },
     user: {
         type: ObjectId,
-        ref: "users",
+        ref: "userstacks",
         required: true
     },
     contacts: {
         type: [ObjectId],
-        ref: "contacts"
+        ref: "contact"
     },
     group: {
         type: ObjectId,
-        ref: "groups"
+        ref: "group"
     },
     message: {
         type: String,
         required:true
+    },
+    createdBy: {
+        type: ObjectId,
+        ref: "userstasks",
+        required: true,   
     },
     createdAt: {
         type: Date, 
@@ -39,6 +43,6 @@ const contactSchema = new mongoose.Schema({
         timestamps: true
        })
 
-const Contact = mongoose.model('contact', contactSchema)
+const Message = mongoose.model('message', messageSchema)
 
-module.exports = Contact
+module.exports = Message

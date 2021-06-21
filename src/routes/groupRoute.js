@@ -1,6 +1,7 @@
 const express = require('express')
 const route = new express.Router()
-const {signupGroup, readGroup, autnenticationMessage, message} = require('../controllers/groupController')
+const {signupGroup, readGroup, message} = require('../controllers/groupController')
+const {autnenticationMessage} = require("../controllers/qrAuthentication");
 const {Auth, isAuth, isAdmin } = require('../middleware/auth')
 
 //Routes

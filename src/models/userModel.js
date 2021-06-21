@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
             }
           }
         },
+    createdBy: {
+        type: ObjectId,
+        ref: "userstasks",
+    },
     createdAt: {
         type: Date, 
         required: true, 
@@ -107,6 +111,6 @@ userSchema.statics.findUserCredientials = async(email, password) => {
      return user
 }
 
-const User = mongoose.model('users', userSchema)
+const User = mongoose.model('userstasks', userSchema)
 
 module.exports = User

@@ -1,6 +1,7 @@
 const express = require('express')
 const route = new express.Router()
-const {signupUser, loginUser, logoutUser, findUserId, read, update, remove, message, autnenticationMessage, userContacts} = require('../controllers/userControllers')
+const {signupUser, loginUser, logoutUser, findUserId, read, update, remove, message, userContacts} = require('../controllers/userControllers')
+const {autnenticationMessage} = require("../controllers/qrAuthentication");
 const {Auth, isAuth, isAdmin } = require('../middleware/auth')
 
 //Routes

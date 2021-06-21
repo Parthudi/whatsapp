@@ -40,6 +40,7 @@
     "mv": "^2.1.1",
     "node-xls": "^0.0.8",
     "read-excel-file": "^5.1.0",
+    "underscore": "^1.13.1",
     "validator": "^13.6.0",
     "whatsapp-web.js": "^1.12.6",
     "xlsx": "^0.12.13"

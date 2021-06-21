@@ -8,4 +8,3 @@ mongoose.connect(URL, {
     useUnifiedTopology: true,
     useFindAndModify: true,
 }).then(() => console.log('Database connected'))
-

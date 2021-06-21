@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {ObjectId} = mongoose.Schema
 
 const companySchema = new mongoose.Schema({
     name: {
@@ -28,6 +29,11 @@ const companySchema = new mongoose.Schema({
     gstin: {
         type: String
     },
+    createdBy: {
+        type: ObjectId,
+        ref : "userstasks",
+        required: true,   
+      },
     createdAt: {
         type: Date, 
         required: true, 
