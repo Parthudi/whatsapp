@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from "react";
+import API from "../../config";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Grid ,TextField,  Button,
   CircularProgress,
   Fade,InputLabel, Select,MenuItem } from "@material-ui/core";
@@ -11,7 +13,6 @@ import { messageUser} from "../../context/UserContext";
 import useStyles from "./styles";
 
 // components
-import PageTitle from "../../components/PageTitle/PageTitle";
 import Widget from "../../components/Widget/Widget";
 import { Typography } from "../../components/Wrappers/Wrappers";
 
@@ -29,21 +30,17 @@ export default function PersonalMessage() {
    const [allcountrycode , setAllCountryCode] = useState([]);
    const [countrycode ,setCountryCode] = useState("");
   
-
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
 const fetchCountryCode = async() => {
   await fetch("https://gist.githubusercontent.com/anubhavshrimal/75f6183458db8c453306f93521e93d37/raw/f77e7598a8503f1f70528ae1cbf9f66755698a16/CountryCodes.json")
       .then(resp => resp.json()).then(data => setAllCountryCode(data));
 }
-  useEffect(async() => {
-    fetchCountryCode();
-  }, []);
-
+ 
   const QrCodeHandler = async() => {
         try{
           setIsLoading(true);
-          const response = await fetch("http://localhost:4000/users/auth", {
+          const response = await fetch(`${API}/users/auth`, {
                   method: "GET",
                   headers: {
                   "Authorization" : `Bearer ${isAuth.token}`,
@@ -62,10 +59,15 @@ const fetchCountryCode = async() => {
         } 
   }
 
+  useEffect(async() => {
+    fetchCountryCode();
+    QrCodeHandler();
+  }, []);
+
   const messageUserHandler = (countrycode,contact, message) => {
     try{
       setIsLoading(true);
-      messageUser(countrycode,contact, message, isAuth.token).then((response) => {
+      messageUser(countrycode,contact, message, isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
         if(response.error){
           console.log(response.error);
@@ -109,11 +111,10 @@ const fetchCountryCode = async() => {
 
   return (
     <>
-      <PageTitle title="Message" />
       <Grid container spacing={4}>
         
-        <Grid item xs={12} md={showQr == true ? 12 : 8}>
-          <Widget title="SEND MESSAGE" disableWidgetMenu>
+        <Grid item xs={12} md={response.length < 22 ? 12 : 8}>
+          
           { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}}>
                             <CircularProgress color="secondary" />
                          </Fade>) : null }
@@ -123,7 +124,7 @@ const fetchCountryCode = async() => {
                 </Typography>
           </Fade>
 
-        { showQr ? 
+        {/* { showQr ? 
                <Button
                onClick={QrCodeHandler}
                variant="contained"
@@ -131,14 +132,14 @@ const fetchCountryCode = async() => {
                size="large"
              >
                 Show QR Code 
-             </Button>  : 
+             </Button>  :  */}
+
 
           <form className={classes.root} noValidate autoComplete="off">
-
-            <InputLabel id="group"> Country_Code </InputLabel>
-            <Select labelId="group" id="group" value={countrycode} onChange={e => setCountryCode(e.target.value)}  className={classes.groupDownButton}>
+            <InputLabel htmlFor="name-multiple">Country Code</InputLabel>
+            <Select labelId="group" id="group" value={countrycode} onChange={e => setCountryCode(e.target.value)} className={classes.groupDownButton} >
               {allcountrycode && allcountrycode.map((comp, i) => {
-                  return <MenuItem value={comp.dial_code} key={i}> {comp.name} </MenuItem>
+                  return <MenuItem value={comp.dial_code} key={i}> {comp.dial_code + "  " + comp.name} </MenuItem>
                 })}
             </Select> 
                 
@@ -174,7 +175,7 @@ const fetchCountryCode = async() => {
                 type="text"
                 fullWidth
               />
-
+<br/><br/>
             <div className={classes.formButtons}>
                   <Button
                     disabled={
@@ -194,6 +195,8 @@ const fetchCountryCode = async() => {
                      Send 
                      <SendIcon className={classes.sendButtonIcon} />
                   </Button>
+
+  <br/><br/>
                 {showMessage.length > 15 ? 
                        <Typography color="secondary" noWrap>
                           {showMessage}
@@ -202,16 +205,14 @@ const fetchCountryCode = async() => {
                         <Typography color="primary" noWrap>
                         {showMessage}
                     </Typography> }
-
               </div>
-          </form>  } 
-          </Widget>
+          </form>  
         </Grid>
-      
+       
       {response.length >= 25 ? 
         (<Grid item xs={12} md={4}>
           <Widget title="QR CODE GENERATOR" disableWidgetMenu>
-            <div className={classes.dashedBorder}>
+            <div className={classes.dashedBorder} style={{margin:"auto"}}>
               {isLoading ? <CircularProgress color="secondary" /> : ( response.length >= 25 ? <QRCode value={response} size={256} />  : (<Typography color="secondary"> {response.user} </Typography> )  ) } 
             </div> 
           </Widget>

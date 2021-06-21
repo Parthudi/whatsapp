@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API from "../../config";
 import {
   Grid,
   CircularProgress,
@@ -18,7 +19,7 @@ import { withRouter } from "react-router-dom";
 import useStyles from "./styles";
 
 // context
-import { useUserDispatch, SignupUser } from "../../context/UserContext";
+import {SignupUser } from "../../context/UserContext";
 
 const UserRegister = (props) => {
   var classes = useStyles();
@@ -37,7 +38,7 @@ const UserRegister = (props) => {
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
 const companies = async() => {
-  const company = await fetch("http://localhost:4000/companies",{
+  const company = await fetch(`${API}/companies`,{
                   method: "GET",
                   headers: {
                         "Authorization": `${isAuth.token}`,
@@ -45,13 +46,16 @@ const companies = async() => {
                 }
               }).then(response => response.json());
 
-    // console.log("company : " +JSON.stringify(company));
     setAllCompany(company);
     setIsLoading(false);
 }
 
 useEffect(() => {
     companies();
+    if(isAuth.user.role==="user"){
+        setRole("user");
+        setCompany(`${isAuth.user.company}`);
+    }
   }, [])
 
   const userSignup = async(name, email, password, role, company) => {
@@ -62,21 +66,21 @@ useEffect(() => {
     console.log("role : " +role);
     console.log("company : " +company);
 
-        await SignupUser(name, email, password, role, company).then(response => {
-        if(response.error) {
-            setError(response.error);
-            setIsLoading(false);
-        }else{
-          setCompany("");
-          setRole("");
-          setPassword("");
-          setEmail("");
-          setName("");
-          setError(false);
-          setIsLoading(false);
+        await SignupUser(name, email, password, role, company, isAuth.user._id).then(response => {
+              if(response.error) {
+                  setError(response.error);
+                  setIsLoading(false);
+              }else{
+                setCompany("");
+                setRole("");
+                setPassword("");
+                setEmail("");
+                setName("");
+                setError(false);
+                setIsLoading(false);
+              }
+          })
         }
-    })
-  }
 
   return (
     <>
@@ -89,14 +93,17 @@ useEffect(() => {
               <Typography variant="h2" className={classes.subGreeting}>
                 Create User
               </Typography>
+
+              <br/><br/>
               {error && error.length > 6 ? (
                 <Fade in={error}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                    {error}
-                </Typography>
-              </Fade>    
+                  <Typography color="secondary" className={classes.errorMessage}>
+                      {error}
+                  </Typography>
+                </Fade>    
               )  : null }
-              
+
+              <br/><br/>
               <TextField
                 id="name"
                 InputProps={{
@@ -147,13 +154,8 @@ useEffect(() => {
               />
 <br/>
             {isAuth.user.role === "user" ? 
-               <div>
-               <InputLabel id="role"> Role </InputLabel>
-                 <Select labelId="role" id="role" label="Role"  onChange={e => setRole(e.target.value)}   className={classes.dropContainer}>
-                   <MenuItem value={isAuth.user.role} > {isAuth.user.role}  </MenuItem>
-                 </Select> 
-               </div>        :
-
+              null
+               :
               <div>
                 <InputLabel id="role"> Role </InputLabel>
                 <Select labelId="role" id="role"  onChange={e => setRole(e.target.value)}  className={classes.dropContainer}>
@@ -164,12 +166,8 @@ useEffect(() => {
             } 
 <br/>
             {isAuth.user.role === "user" ?
-              <div>
-                <InputLabel id="company"> Company </InputLabel>
-                  <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)} disabled={role.length === 0} className={classes.dropContainer}>
-                    <MenuItem value={isAuth.user.company} > {isAuth.companyName}  </MenuItem>
-                  </Select> 
-                </div>  : 
+              null
+                :  
                   (  <div>
                         <InputLabel id="company"> Company </InputLabel>
                         <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)} disabled={role.length === 0 || role === "admin"} className={classes.dropContainer}>

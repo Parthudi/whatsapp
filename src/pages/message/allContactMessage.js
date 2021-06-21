@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import API from "../../config";
 import { Grid ,TextField,  Button,
   CircularProgress,
   Fade,} from "@material-ui/core";
@@ -12,7 +13,6 @@ import {messageAllUsers} from "../../context/UserContext";
 import useStyles from "./styles";
 
 // components
-import PageTitle from "../../components/PageTitle/PageTitle";
 import Widget from "../../components/Widget/Widget";
 import { Typography } from "../../components/Wrappers/Wrappers";
 
@@ -23,7 +23,6 @@ export default function AllContacts() {
    const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState(null);
    const [response, setResponse] = useState("");
-//    const [contactValue, setContactValue] = useState("");
    const [messageValue, setMessageValue] = useState("");
    const [showQr , setShowQr] = useState(true);
    const [showMessage , setShowMessage] = useState("");
@@ -33,7 +32,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
   const QrCodeHandler = async() => {
         try{
           setIsLoading(true);
-          const response = await fetch("http://localhost:4000/contact/auth", {
+          const response = await fetch(`${API}/contact/auth`, {
                   method: "GET",
                   headers: {
                   "Authorization" : `Bearer ${isAuth.token}`,
@@ -52,10 +51,15 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         } 
   }
 
+  useEffect(() => {
+    QrCodeHandler();
+  }, [])
+
   const messageAllHandler = (message) => {
     try{
       setIsLoading(true);
-      messageAllUsers(message, isAuth.user.company, isAuth.token).then((response) => {
+      const company = isAuth.user.role === "user" ? isAuth.user.company : "admin";
+      messageAllUsers(message, company , isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
       
         if(response.error){
@@ -98,11 +102,10 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   return (
     <>
-      <PageTitle title="Message" />
       <Grid container spacing={4}>
         
-        <Grid item xs={12} md={showQr == true ? 12 : 8}>
-          <Widget title="SEND MESSAGE" disableWidgetMenu>
+        <Grid item xs={12} md={response.length < 22 ? 12 : 8}>
+
           { isLoading ? (<Fade in={isLoading}  style={{marginLeft:"50px"}}>
                              <CircularProgress color="secondary" />
                           </Fade>) : null }
@@ -112,7 +115,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                 </Typography>
           </Fade>
 
-        { showQr ? 
+        {/* { showQr ? 
                <Button
                onClick={QrCodeHandler}
                variant="contained"
@@ -121,8 +124,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
              >
                 Show QR Code 
              </Button>
-        : 
+        :  */}
           <form className={classes.root} noValidate autoComplete="off">
+            <br/><br/><br/><br/>
               <TextField
                 id="message"
                 InputProps={{
@@ -139,7 +143,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                 type="text"
                 fullWidth
               />
-
+<br/><br/><br/>
             <div className={classes.formButtons}>
                   <Button
                     disabled={
@@ -157,6 +161,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                      Send 
                      <SendIcon className={classes.sendButtonIcon} />
                   </Button>
+<br/><br/>
                 {showMessage.length > 15 ? 
                        <Typography color="secondary" noWrap>
                           {showMessage}
@@ -167,15 +172,14 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                     </Typography> }
 
               </div>
-          </form>  } 
-          </Widget>
+          </form>  
         </Grid>
       
       {response.length >= 25 ? 
         (<Grid item xs={12} md={4}>
           <Widget title="QR CODE GENERATOR" disableWidgetMenu>
-            <div className={classes.dashedBorder}>
-              {isLoading ? <CircularProgress color="secondary" /> : ( response.length >= 25 ? <QRCode value={response} size={256} />  : (<Typography color="secondary"> {response.user} </Typography> )  ) } 
+            <div className={classes.dashedBorder} style={{margin:"auto"}}>
+              {isLoading ? <CircularProgress color="secondary" /> : ( response.length >= 25 ? <QRCode value={response} size={256}  />  : (<Typography color="secondary"> {response.user} </Typography> )  ) } 
             </div> 
           </Widget>
         </Grid>) : null }

@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import API from "../../config";
 import { Grid ,TextField,  Button,
   CircularProgress,
   Fade,
@@ -15,7 +16,6 @@ import { messageGroup} from "../../context/UserContext";
 import useStyles from "./styles";
 
 // components
-import PageTitle from "../../components/PageTitle/PageTitle";
 import Widget from "../../components/Widget/Widget";
 import { Typography } from "../../components/Wrappers/Wrappers";
 
@@ -39,7 +39,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
     const userID = isAuth.user.role === "user" ? isAuth.user._id : "admin" ;;
 
         setIsLoading(true);
-        const allGroups = await fetch("http://localhost:4000/groups", {
+        const allGroups = await fetch(`${API}/groups`, {
                 method: "POST",
                 headers: {
                 "Authorization" : `Bearer ${isAuth.token}`,
@@ -52,17 +52,16 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               setIsLoading(false);
               setAllGroups(allGroups);
         }catch(error){
+            setIsLoading(false);
+            setError(true);
             console.log(error);
       } 
   }
-  useEffect(() => {
-    allGroups();
-  }, []);
-
+ 
   const QrCodeHandler = async() => {
         try{
           setIsLoading(true);
-          const response = await fetch("http://localhost:4000/group/auth", {
+          const response = await fetch(`${API}/group/auth`, {
                   method: "GET",
                   headers: {
                   "Authorization" : `Bearer ${isAuth.token}`,
@@ -81,10 +80,16 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         } 
   }
 
+  useEffect(() => {
+    allGroups();
+    QrCodeHandler();
+  }, []);
+
+  
   const messageGroupHandler = (group, message) => {
     try{
       setIsLoading(true);
-      messageGroup(group, message, isAuth.token).then((response) => {
+      messageGroup(group, message, isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
         if(response.error){
             console.log(response.error);
@@ -127,11 +132,10 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   return (
     <>
-      <PageTitle title="Message" />
       <Grid container spacing={4}>
         
-        <Grid item xs={12} md={showQr == true ? 12 : 8}>
-          <Widget title="SEND MESSAGE" disableWidgetMenu>
+        <Grid item xs={12} md={response.length < 22 ? 12 : 8}>
+
           { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}} >
                             <CircularProgress color="secondary" />
                         </Fade>) : null }
@@ -148,7 +152,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                   </Typography>
                 </Fade> : null}
 
-        { showQr ? 
+        {/* { showQr ? 
                <Button
                onClick={QrCodeHandler}
                variant="contained"
@@ -156,13 +160,14 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                size="large"
              >
                 Show QR Code 
-             </Button>  :
+             </Button>  : */}
 
           <form className={classes.root} noValidate autoComplete="off">
                 <div>
                         <InputLabel id="group"> Groups </InputLabel>
-                        <Select labelId="group" id="group"  onChange={e => setGroup(e.target.value)}  className={classes.groupDownButton}>
+                        <Select labelId="group" id="group"  onChange={e => setGroup(e.target.value)}  className={response.length < 22 ? classes.groupDownButton : classes.shortDropDown}>
                           {allgroups && allgroups.map((comp, i) => {
+                            console.log("id of company : " +comp._id);
                             return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                           })}
                         </Select> 
@@ -184,7 +189,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                 type="text"
                 fullWidth
               />
-
+<br/><br/>
             <div className={classes.formButtons}>
                   <Button
                     disabled={
@@ -194,7 +199,6 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                       messageGroupHandler(
                         group,
                         messageValue,
-                        isAuth
                       )
                     }
                     variant="contained"
@@ -204,6 +208,8 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                      Send 
                      <SendIcon className={classes.sendButtonIcon} />
                   </Button>
+
+<br/><br/>
                 {showMessage.length > 15 ? 
                        <Typography color="secondary" noWrap>
                           {showMessage}
@@ -214,14 +220,13 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                     </Typography> }
 
               </div>
-          </form>  } 
-          </Widget>
+          </form>  
         </Grid>
       
       {response.length >= 25 ? 
         (<Grid item xs={12} md={4}>
           <Widget title="QR CODE GENERATOR" disableWidgetMenu>
-            <div className={classes.dashedBorder}>
+            <div className={classes.dashedBorder} style={{margin:"auto"}}>
               {isLoading ? <CircularProgress color="secondary" /> : ( response.length >= 25 ? <QRCode value={response} size={256} />  : (<Typography color="secondary"> {response.user} </Typography> )  ) } 
             </div> 
           </Widget>

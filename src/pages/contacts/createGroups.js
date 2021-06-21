@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from "react";
+import API from "../../config";
 import {
   Grid,
   CircularProgress,
@@ -10,7 +11,7 @@ import {
 import { withRouter } from "react-router-dom";
 import MUIDataTable from "mui-datatables";
 import AddIcon from "@material-ui/icons/Add";
-
+import SubtractIcon from "@material-ui/icons/Remove"
 import { GroupRegistration } from "../../context/UserContext";
 
 // styles
@@ -29,12 +30,13 @@ function CreateGroups(props) {
   const [dataa, setDataa] = useState([]);
   const [mobilenumbers, setMobileNumbers] = useState([]);
   const [disablebutton , setDisablebutton] = useState([]);
+  const [userid, setUserId] = useState([]);
 
   const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const usersData = () => {
     const userCompanyID = isAuth.user.role === "user" ? isAuth.user.company :"admin" ;;
-    fetch("http://localhost:4000/contacts",{
+    fetch(`${API}/contacts`,{
        method: "POST",
        headers: {
        "Authorization" : `Bearer ${isAuth.token}`,
@@ -54,22 +56,41 @@ function CreateGroups(props) {
         datatableData.splice(i,1);
         console.log(datatableData);
 
+        let idOfSelectedUsers = [ ...userid];
+        idOfSelectedUsers.push(dataa[i]._id);
+        setUserId(idOfSelectedUsers)
+
         let disabledButton = [ ...disablebutton];
-        disabledButton.push(i);
-        setDisablebutton(disabledButton)
-        console.log("disabledButton : " +disabledButton);
+        disabledButton.push(dataa[i].name);
+        setDisablebutton(disabledButton); //disable add button;
+        console.log("disabledButton while adding : " +disabledButton);
 
         let mobileNumbersArr = [...mobilenumbers];
-        mobileNumbersArr.push(dataa[i].country_code+dataa[i].mobile_number);
+        mobileNumbersArr.push(dataa[i].name);
         setMobileNumbers(mobileNumbersArr)
-        console.log("mobileNumbersArr : " +mobileNumbersArr);
+        console.log("mobileNumbersArr : " +mobileNumbersArr.length);
+    }
+
+    const removeUserFromGroup = async(i) => {
+      console.log("remove index : " +i);
+      console.log("disablebutton length : + " +disablebutton.length);
+
+      const findingElement = dataa[i].name;
+      console.log("findingElement : " +findingElement);
+
+    const newArr = mobilenumbers.filter((mobile) => {
+              console.log("filter mobile : " +mobile);
+              return findingElement !== mobile
+          })
+        console.log("newArr : " +newArr);
+        setMobileNumbers(newArr);
+        setDisablebutton(newArr);
     }
   
     const createGroupHandler = async(name) => {
           setIsLoading(true);
-          console.log("mobilenumbers + " +mobilenumbers);
     
-          await GroupRegistration(mobilenumbers, name, isAuth.user._id, isAuth.token).then(response => {
+          await GroupRegistration(userid, name, isAuth.user._id, isAuth.token).then(response => {
                  if(response.error) {
                      setIsLoading(false);
                      setError(true);
@@ -78,8 +99,13 @@ function CreateGroups(props) {
                      setIsLoading(false);
                      setError(false);
                      setName("");
+                     setMobileNumbers("");
+                     setDisablebutton("");
                      setMessage(response.message);
                  }
+                 setTimeout(() => { 
+                    setMessage("");
+                  }, 3000);
           })
     }
 
@@ -87,17 +113,16 @@ function CreateGroups(props) {
        console.log("i : "+ i);
        datatableData.push(
          [                                                      
-          <Fab size="small" onClick={() => addUserToGroup(i)} key={i} disabled={disablebutton.includes(i)} color="primary"  aria-label="add">
+          <Fab size="small" onClick={() => addUserToGroup(i)} key={i} disabled={disablebutton.includes(element.name)} color="primary"  aria-label="add">
               <AddIcon />
-          </Fab> ,  `${element.email}`,  `${element.mobile_number}` , `${element.country_code}`,] 
+          </Fab> ,
+          <Fab size="small" onClick={() => removeUserFromGroup(i)} key={i} disabled={!mobilenumbers.includes(element.name)}  color="secondary"  aria-label="remove">
+            <SubtractIcon />
+          </Fab>, `${element.name}` , `${element.email}`,  `${element.mobile_number}` , `${element.country_code}`,] 
          )
        }) 
-     const columns = ["Add" , "Email" , "Mobile_Number" ,"Country_Code" ]; 
+     const columns = ["Add" , "Remove", "Name", "Email" , "Mobile Number" ,"Country Code" ]; 
 
-     const contactChangedHandler = () => {
-       console.log("contacts changed : ");
-     }
-     
   return (
     <React.Fragment>
           
@@ -123,22 +148,6 @@ function CreateGroups(props) {
                  </Fade>)  }
              
               <TextField
-                id="contact"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={mobilenumbers}
-                // onChange={e => contactChangedHandler}
-                margin="normal"
-                placeholder="Contacts"
-                type="text"
-                fullWidth
-              />
-
-              <TextField
                 id="name"
                 InputProps={{
                   classes: {
@@ -154,10 +163,23 @@ function CreateGroups(props) {
                 fullWidth
               />
 
+              <TextField
+                id="contact"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={mobilenumbers}
+                // onChange={e => contactChangedHandler}
+                margin="normal"
+                placeholder="Contacts"
+                type="text"
+                fullWidth
+              />
+
               <div className={classes.creatingButtonContainer}>
-                {isLoading ? (
-                  <CircularProgress size={26} />
-                ) : (
                   <Button
                     onClick={() =>
                       createGroupHandler(
@@ -175,15 +197,16 @@ function CreateGroups(props) {
                     className={classes.createAccountButton}  >
                     Create
                   </Button>
-                )}
               </div>
+
+              { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}} >
+                            <CircularProgress color="secondary" />
+                        </Fade>) : null }
             
             </React.Fragment>
 
         </div> <br></br>
-        {/* <Typography color="primary" className={classes.copyright}>
-        © 2020-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://www.vistaura.com/" rel="noopener noreferrer" target="_blank"> Vistaura </a>, LLC. All rights reserved.
-        </Typography> */}
+      
       </div>
     </Grid>
 

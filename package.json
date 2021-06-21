@@ -16,7 +16,9 @@
     "@mdi/react": "^1.4.0",
     "apexcharts": "^3.24.0",
     "classnames": "^2.2.6",
+    "dotenv": "^8.2.0",
     "font-awesome": "^4.7.0",
+    "moment": "^2.29.1",
     "mui-datatables": "^3.7.4",
     "qrcode.react": "^1.0.1",
     "react": "^16.14.0",
@@ -55,6 +57,7 @@
   },
   "devDependencies": {
     "@babel/helper-call-delegate": "^7.11.4",
+    "env-cmd": "^10.1.0",
     "prettier": "^2.1.1"
   }
 }

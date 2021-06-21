@@ -2,14 +2,17 @@ import { makeStyles } from "@material-ui/styles";
 
 export default makeStyles(theme => ({
   dashedBorder: {
-    border: "1px dashed",
-    borderColor: theme.palette.primary.main,
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(3),
-    paddingRight: theme.spacing(8),
-    paddingLeft: theme.spacing(8),
-    paddingBottom: theme.spacing(3),
-  },
+    // ['@media (min-width:780px)']: { // eslint-disable-line no-useless-computed-key
+      border: "1px dashed",
+      borderColor: theme.palette.primary.main,
+      // padding: theme.spacing(2),
+      paddingTop: theme.spacing(2),
+      // paddingRight: theme.spacing(2),
+      // paddingLeft: theme.spacing(8),
+      paddingBottom: theme.spacing(2),
+    },
+   
+  // },
   text: {
     marginBottom: theme.spacing(5),
   },
@@ -17,15 +20,43 @@ export default makeStyles(theme => ({
     height: "100px"
   },
   groupDownButton:{
-    width : "880px"
+    // ['@media (min-width:780px)']: { // eslint-disable-line no-useless-computed-key
+      width : "50%",
+    // },
+    
+  },
+  shortDropDown:{
+    width : "460px"
   },
   margin: {
     margin: theme.spacing(1),
   },
   backgroundSetting: {
-    height:"50%", 
+    marginTop: theme.spacing(5),
+    height: "50%",
     textAlign:"center",
-  },
+  }, 
+  select: {
+    textAlign: "center",
+    padding: "8px",
+      width: '90%',
+    '&:before': {
+        borderColor: "red",
+    },
+    '&:after': {
+        borderColor: "blue",
+    }
+},
+borderStyle:{
+  "border-top": "2px solid grey" ,
+  "border-right": "1px solid grey" ,
+  "border-left": "2px solid grey" ,
+  "border-top": "2px solid grey" ,
+  "border-radius": "10px"
+},
+icon: {
+    fill: "grey",
+},
   button: {
     padding: theme.spacing(2),
     marginTop: theme.spacing(10),
@@ -44,4 +75,6 @@ export default makeStyles(theme => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
+
 }));
+

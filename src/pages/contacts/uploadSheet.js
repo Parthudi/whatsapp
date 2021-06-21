@@ -1,43 +1,51 @@
 import React, {useState, useEffect} from 'react';
+import API from "../../config";
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, CircularProgress,
-    Fade, Typography} from "@material-ui/core";
+    Fade, Typography, InputLabel,Select,MenuItem} from "@material-ui/core";
 import ColumnMapping from "./columnMapping"
 import Widget from "../../components/Widget/Widget";
 import { withRouter } from "react-router-dom";
+import useStyles from "./styles";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(1),
-    },
-  },
-  input: {
-    display: 'none',
-  },
-}));
-
- function UploadExcelSheet(props) {
+const UploadExcelSheet = (props) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [excelMessage, setExcelMessage] = useState("");
     const [values, setValues] = useState({formData : ""});
     const [available ,setAvailable] = useState(false);
     const [filename, setFileName] = useState("");
+    const [allcompany, setAllCompany] = useState([])
+    const [company, setCompany] = useState([])
+
     const { formData } = values;
 
   const classes = useStyles();
 
   const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
+  const companies = async() => {
+    const company = await fetch(`${API}/companies`,{
+                    method: "GET",
+                    headers: {
+                          "Authorization": `${isAuth.token}`,
+                          "Content-Type": "application/json"
+                  }
+                }).then(response => response.json());
+  
+      setAllCompany(company);
+      setIsLoading(false);
+  }
+
   useEffect(() => {
+    companies();
     return (setValues({ formData : new FormData() }) );
 }, []);
 
   const getExcelSheet = async() => {
       try{
         setIsLoading(true);
-        const response = await fetch("http://localhost:4000/download/excel",{
+        const response = await fetch(`${API}/download/excel`,{
               method: "POST",
               headers: {
                   "Authorization" : `Bearer ${isAuth.token}`,
@@ -96,14 +104,32 @@ const useStyles = makeStyles((theme) => ({
                 </Typography>
             </Fade>)  }
 
-                <p>Please select an Excel file from your computer:</p>
-                <form className={classes.root} noValidate autoComplete="off">
+              <form className={classes.root} noValidate autoComplete="off">
+
+<br/>
+              {isAuth.user.role === "admin" ? 
+                  <div >
+                    <InputLabel id="company"> Company </InputLabel>
+                    <Select labelId="company" id="company"  onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
+                        {allcompany && allcompany.map((comp, i) => {
+                          return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
+                        })}
+                    </Select> 
+                </div>
+                  :
+                  null
+                } 
+<br/>
+
+                  <p>Please select an Excel file from your computer:</p>
+
                     <input type="file"  onChange={handleonchange('excelsheet')}  name="excelsheet" required/> 
                     <div className={classes.creatingButtonContainer}>
                         <Button
                             onClick={() =>  getExcelSheet() }
                             disabled={
-                              available == false
+                              available == false ||
+                              company === 0
                             }
                             size="large"
                             variant="contained"
@@ -117,9 +143,9 @@ const useStyles = makeStyles((theme) => ({
           </div>
                   :
               <div className={classes.mapp}>
-                  <br/><br/>
+                  <br/>
 
-                {filename.length > 1 ? <ColumnMapping filename={filename}/>  : null }
+                {filename.length > 1 ? <ColumnMapping filename={filename} company={company}/>  : null }
              </div> }
 
        </Widget>

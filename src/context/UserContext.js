@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import API from "../config";
 
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
@@ -21,12 +22,12 @@ function userReducer(state, action) {
 }
 
 function UserProvider({ children }) {
-  const err = "Fill the correct details only!";
+  const err = "please fill the correct details only !!!";
   
   var [state, dispatch] = React.useReducer(userReducer, {
-      isAuthenticated: !!localStorage.getItem("TOKEN"),
-      error: !!err
-  });
+      error: !! `${err}`,
+      isAuthenticated: !!localStorage.getItem("TOKEN")
+    });
 
   return (
     <UserStateContext.Provider value={state}>
@@ -55,15 +56,15 @@ function useUserDispatch() {
 
 // ###########################################################
 
-async function SignupCompany(name, address1 ,address2, state, city, pincode, gstin) {
+async function SignupCompany(name, address1 ,address2, state, city, pincode, gstin, userID) {
   try {
-      const response = await fetch(`http://localhost:4000/company/signup`,{
+      const response = await fetch(`${API}/company/signup`,{
               method: "POST",
               headers: {
                         Accept:  "application/json",
                       "Content-Type": "application/json"
               },
-              body: JSON.stringify({name,address1,address2,state,city,pincode,gstin})
+              body: JSON.stringify({name,address1,address2,state,city,pincode,gstin,createdBy:userID})
             }).then(response => response.json());
 
             return response;
@@ -74,15 +75,15 @@ async function SignupCompany(name, address1 ,address2, state, city, pincode, gst
   }
 }
 
-async function SignupUser(name, email, password, role, company) {
+async function SignupUser(name, email, password, role, company, userID) {
     try{
-      const response = await fetch(`http://localhost:4000/user/signup`,{
+      const response = await fetch(`${API}/user/signup`,{
               method: "POST",
               headers: {
                         Accept:  "application/json",
                       "Content-Type": "application/json"
               },
-              body: JSON.stringify({name, email, password, role, company})
+              body: JSON.stringify({name, email, password, role, company, userID})
             }).then(response => response.json());
             return response;
         } catch(error) {
@@ -93,7 +94,10 @@ async function SignupUser(name, email, password, role, company) {
 
 async function LoginUser(dispatch, email, password, history, setIsLoading, setError) {
   try{
-      const data = await fetch(`http://localhost:4000/user/login`,{
+    // console.log("REACT_APP_API_URL + " +process.env.REACT_APP_API_URL);
+    // // console.log("REACT_APP_API_URI  + " +process.env.REACT_APP_API_URL );
+    // console.log("API + " +APII);
+      const data = await fetch(`${API}/user/login`,{
                       method: "POST",
                       headers: {
                                 Accept:  "application/json",
@@ -119,7 +123,7 @@ async function LoginUser(dispatch, email, password, history, setIsLoading, setEr
 
 const signOut = async(dispatch, history, token, userID) => {
 
-  const response = await fetch(`http://localhost:4000/user/logout/${userID}`,{
+  const response = await fetch(`${API}/user/logout/${userID}`,{
                     method: "POST",
                     headers: {
                             Authorization: `Bearer ${token}`,
@@ -146,7 +150,7 @@ export const isAuthenticated = () => {
 
 export const GroupRegistration = async(contacts, name, user, token) => {
   try{
-    const response = await fetch(`http://localhost:4000/group/signup`,{
+    const response = await fetch(`${API}/group/signup`,{
           method: "POST",
           headers: {
                   "Authorization" : `${token}`,
@@ -162,15 +166,15 @@ export const GroupRegistration = async(contacts, name, user, token) => {
   }
 }
 
-export const messageGroup = async(group, message, token) => {
+export const messageGroup = async(group, message, token, companyID, userID) => {
   try{
-    const response = await fetch(`http://localhost:4000/group/message`,{
+    const response = await fetch(`${API}/group/message`,{
           method: "POST",
           headers: {
                   "Authorization" : `Bearer ${token}`,
                   "Content-Type": "application/json"
           },
-          body: JSON.stringify({group, message})
+          body: JSON.stringify({group, message, companyID, userID})
         }).then(res => res.json());
 
         console.log("response : " +response.message);
@@ -181,15 +185,15 @@ export const messageGroup = async(group, message, token) => {
   }
 }
 
-export const messageAllUsers = async(message, company_id, token) => {
+export const messageAllUsers = async(message, company_id, token, companyID, userID) => {
   try{
-    const response = await fetch(`http://localhost:4000/contact/message`,{
+    const response = await fetch(`${API}/contact/message`,{
           method: "POST",
           headers: {
                   "Authorization" : `Bearer ${token}`,
                   "Content-Type": "application/json"
           },
-          body: JSON.stringify({company_id, message})
+          body: JSON.stringify({company_id, message, companyID, userID})
         }).then(res => res.json());
 
         console.log("response : " +response.message);
@@ -200,15 +204,15 @@ export const messageAllUsers = async(message, company_id, token) => {
   }
 }
 
-async function messageUser(countrycode, contact, message, token) {
+async function messageUser(countrycode, contact, message, token, companyID, userID) {
   try{
-    const response = await fetch("http://localhost:4000/user/message", {
+    const response = await fetch(`${API}/user/message`, {
             method: "POST",
             headers: {
             "Authorization" : `Bearer ${token}`,
             "Content-Type": "application/json"
               },
-            body: JSON.stringify({contact: countrycode+contact, message: message})
+            body: JSON.stringify({countrycode, contact, message: message, companyID, userID})
           }).then(res => res.json()) ;
 
           console.log("response at messageUser : " +response.message);

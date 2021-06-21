@@ -22,6 +22,9 @@ export default makeStyles(theme => ({
       display: "none",
     },
   },
+  groupDownButton:{
+    width : "550px"
+  },
   logotypeImage: {
     width: 165,
     marginBottom: theme.spacing(4),
@@ -48,10 +51,13 @@ export default makeStyles(theme => ({
     },
   },
   dropContainer: {
-    width: 550,
+    width: 1350,
   },
   dataTable: {
     marginTop: theme.spacing(5),
+  },
+  mappingContainer:{
+    width: 250,
   },
   root: {
     '& > *': {

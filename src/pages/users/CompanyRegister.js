@@ -30,15 +30,17 @@ function CompanyRegister(props) {
   
   const [company, setCompany] = useState("")
 
-  const [address1, setAddress1] = useState("202-A avadh residency")
-  const [address2, setAddress2] = useState(" in yoginagar township")
-  const [state, setState] = useState("gujarat")
-  const [city, setCity] = useState("vadodara")
-  const [pincode, setPincode] = useState("390002")
-  const [gstin, setGstin] = useState("7865452")
+  const [address1, setAddress1] = useState("")
+  const [address2, setAddress2] = useState("")
+  const [state, setState] = useState("")
+  const [city, setCity] = useState("")
+  const [pincode, setPincode] = useState("")
+  const [gstin, setGstin] = useState("")
+
+const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const companyRegister = async(company, address1, address2, state, city, pincode, gstin) => {
-    await SignupCompany(company, address1, address2, state, city, pincode, gstin).then(response => {
+    await SignupCompany(company, address1, address2, state, city, pincode, gstin, isAuth.user._id).then(response => {
       if(response.error) {
         setError(response.error);
         setIsLoading(false);

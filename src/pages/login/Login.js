@@ -28,21 +28,23 @@ function Login(props) {
 
   // local
   const [isLoading, setIsLoading] = useState(false);
-  const [errorr, setError] = useState("");
+  const [error, setError] = useState(false);
   const [activeTabId, setActiveTabId] = useState(0);
   
-  const [emailValue, setEmailValue] = useState("parmarparth597@gmail.com");
-  const [passwordValue, setPasswordValue] = useState("parthu");
+  const [emailValue, setEmailValue] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
 
   const clickHandler = (userDispatch,emailValue,passwordValue) => {
       LoginUser(userDispatch,emailValue,passwordValue).then((data) => {
+        console.log("here we are inside the ddataaa : ");
         if(data.error){
+           setError(true);
            console.log("Error : " +data.error);
-           setError("User Not Found ! Please Fill Correct Details Only :( ");
-           console.log("errrrrrrror : " +errorr);
+           console.log("errrrrrrror : " +error);
            setIsLoading(false);
         }else{
-          console.log("no eerrorr")
+           console.log("no eerrorr")
+           setError(false);
            setIsLoading(false);
            props.history.push('/app/dashboard')
         }
@@ -84,15 +86,16 @@ function Login(props) {
                 <Typography variant="h1" className={classes.greeting}>
                  Good Evening User 
             </Typography>
-              ) }
-              
-            {errorr && errorr.length > 1 ? (
-              console.log("showing error"),
-              <Fade in={errorr}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                   {errorr}
-                </Typography> 
-              </Fade>) : console.log("null error")} 
+              ) } 
+
+            { error ? console.log("error is showing ")
+              //  ( <Fade in={error}>
+              //       <Typography color="secondary" className={classes.errorMessage}>
+              //           Please fill the credentials properly  :(
+              //       </Typography>
+              //   </Fade> )
+                : 
+                console.log("error is not showing ")  }
 
 <br/><br/><br/>
               <TextField
@@ -108,6 +111,7 @@ function Login(props) {
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
+                autoComplete="false"
                 fullWidth
               />
               <TextField
@@ -123,6 +127,7 @@ function Login(props) {
                 margin="normal"
                 placeholder="Password"
                 type="password"
+                autoComplete="false"
                 fullWidth
               />
               <div className={classes.formButtons}>

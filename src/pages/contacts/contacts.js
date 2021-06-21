@@ -1,4 +1,5 @@
 import React,{useEffect, useState} from "react";
+import API from "../../config";
 import { Grid, Button, CircularProgress,
   Fade,Typography} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
@@ -25,13 +26,15 @@ const Contacts = (props) => {
 
 const classes = useStyles();
 
+const [isLoading, setIsLoading] = useState(false);
 const [dataa, setDataa] = useState([]);
 
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const usersData = () => {
+    setIsLoading(true);
      const userCompanyID = isAuth.user.role === "user" ? isAuth.user.company :"admin" ;
-     fetch("http://localhost:4000/contacts",{
+     fetch(`${API}/contacts`,{
         method: "POST",
         headers: {
         "Authorization" : `Bearer ${isAuth.token}`,
@@ -39,6 +42,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
           },
         body: JSON.stringify({userCompanyID})
       }).then(res => res.json()).then(resp => (setDataa(resp.contact)))
+    setIsLoading(false);
   }
 
 useEffect(() => { 
@@ -50,10 +54,10 @@ useEffect(() => {
       let datatableData = [];
       dataa.forEach(element => {
         datatableData.push(
-          [`${element.email}`,  `${element.mobile_number}` , `${element.country_code}`] 
+          [`${element.name}` ,`${element.email}`,  `${element.mobile_number}` , `${element.country_code}`] 
           )
         }) 
-      const columns = ["Email" , "Mobile_Number" ,"Country_Code"]; 
+      const columns = ["Name" , "Email" , "Mobile Number" ,"Country Code"]; 
     
     const addContactHandler = () => {
           props.history.push("/app/contact/register");
@@ -66,6 +70,9 @@ useEffect(() => {
   return (
     <>
       <PageTitle title="Contacts" />
+      { isLoading ? (<Fade in={isLoading}>
+                        <CircularProgress color="secondary" />
+                    </Fade>) : null }
       <Button
           onClick={addContactHandler}
           variant="contained"
@@ -80,7 +87,17 @@ useEffect(() => {
           size="large" >
           Create Group 
       </Button>
+
+      <Button
+          onClick={() => props.history.push("/app/contacts/addexcel")}
+          variant="contained"
+          style={{float:"right"}}
+          color="inherit"
+          size="large" >
+            Upload Contacts
+        </Button>
      
+     <br/><br/><br/>
         <Grid item xs={12}>
             <MUIDataTable
               title="All Contacts"
@@ -95,13 +112,7 @@ useEffect(() => {
             />
         </Grid>
         <br/>
-        <Button
-          onClick={() => props.history.push("/app/contacts/addexcel")}
-          variant="contained"
-          color="inherit"
-          size="large" >
-            Upload Contacts
-        </Button>
+       
     
     </>
   );

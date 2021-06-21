@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API from "../../config";
 import {
   Grid,
   CircularProgress,
@@ -27,18 +28,21 @@ function AddContacts(props) {
   const [mobile, setMobile] = useState("");
   const [countrycode, setCountryCode] = useState("");
   const [email , setEmail] = useState("")
- 
-  const addContactsHandler = async(company,mobile,countrycode,email) => {
+  const [name, setName] = useState("")
+  const [message, setMessage] = useState("");
+  const [allcountrycode, setAllCountryCode] = useState([]);
+
+  const addContactsHandler = async(name, company,mobile,countrycode,email) => {
     try{
       setIsLoading(true);
-       
-      const contactRegister = await fetch(`http://localhost:4000/contact/signup`,{
+       const userID = isAuth.user._id;
+      const contactRegister = await fetch(`${API}/contact/signup`,{
              method: "POST",
              headers: {
                        Accept:  "application/json",
                      "Content-Type": "application/json"
              },
-             body: JSON.stringify({company ,mobile_number : mobile, country_code : countrycode, email})
+             body: JSON.stringify({name, company ,mobile_number : mobile, country_code : countrycode, email, createdBy: userID})
            }).then(response => response.json());
  
            if(contactRegister.error) {
@@ -51,6 +55,7 @@ function AddContacts(props) {
           setMobile("")
           setCountryCode("")
           setEmail("")
+          setMessage(contactRegister.message);
    }catch(error){
      console.log("JSON.setr : " +JSON.stringify(error));
       setError(error.message);
@@ -58,11 +63,11 @@ function AddContacts(props) {
    }
 }
     
-
 const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
+
   const companies = async() => {
-    const company = await fetch("http://localhost:4000/companies",{
+    const company = await fetch(`${API}/companies`,{
                     method: "GET",
                     headers: {
                           "Authorization": `${isAuth.token}`,
@@ -73,9 +78,18 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
       setAllCompany(company);
       setIsLoading(false);
   }
+
+  const fetchCountryCode = async() => {
+    await fetch("https://gist.githubusercontent.com/anubhavshrimal/75f6183458db8c453306f93521e93d37/raw/f77e7598a8503f1f70528ae1cbf9f66755698a16/CountryCodes.json")
+        .then(resp => resp.json()).then(data => setAllCountryCode(data));
+  }
   
   useEffect(() => {
       companies();
+      fetchCountryCode();
+      if(isAuth.user.role === "user") {
+        setCompany(isAuth.user.company);
+      }
     }, [])
 
   return (
@@ -89,23 +103,36 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               <Typography variant="h2" className={classes.subGreeting}>
                  Contacts 
               </Typography>
+              <br/><br/>
+              { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}} >
+                            <CircularProgress color="secondary" />
+                        </Fade>) : null }
 
               {error && error.length > 6 ? (
                 <Fade in={error}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                    {error}
-                </Typography>
-              </Fade>    
+                  <Typography color="secondary" className={classes.errorMessage}>
+                      {error}
+                  </Typography>
+                </Fade>    
               )  : null }
 
-<br/><br/><br/>
+            {message && message.includes("Created") ?
+                <Fade in={message}>
+                <Typography color="primary" className={classes.errorMessage}>
+                    {message}
+                </Typography>
+              </Fade> : null}
+
+<br/><br/>
               {isAuth.user.role === "user" ?
-                  <div>
-                  <InputLabel id="company"> Company </InputLabel>
-                    <Select labelId="company" id="company" value={company} onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
-                      <MenuItem  value={isAuth.user.company}> {isAuth.companyName}  </MenuItem>
-                    </Select> 
-                </div>    :
+                    null
+                //   <div>
+                //   <InputLabel id="company"> Company </InputLabel>
+                //     <Select labelId="company" id="company" value={isAuth.user.company} disabled className={classes.dropContainer}>
+                //       <MenuItem  value={isAuth.user.company}> {isAuth.companyName}  </MenuItem>
+                //     </Select> 
+                // </div>    
+                      :
                         (  <div>
                             <InputLabel id="company"> Company </InputLabel>
                             <Select labelId="company" id="company" value={company}  onChange={e => setCompany(e.target.value)}className={classes.dropContainer}>
@@ -115,6 +142,23 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                             </Select> 
                           </div> )
               }
+
+          <TextField
+                id="name"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={name}
+                onChange={e => setName(e.target.value)}
+                margin="normal"
+                placeholder="Name"
+                type="text"
+                fullWidth
+              />
+
               <TextField
                 id="mobile"
                 InputProps={{
@@ -126,26 +170,17 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                 value={mobile}
                 onChange={e => setMobile(e.target.value)}
                 margin="normal"
-                placeholder="Mobile_Number"
+                placeholder="Mobile Number"
                 type="text"
                 fullWidth
               />
-
-              <TextField
-                id="Countrycode"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={countrycode}
-                onChange={e => setCountryCode(e.target.value)}
-                margin="normal"
-                placeholder="Country_code"
-                type="text"
-                fullWidth
-              />
+<br/>
+            <InputLabel id="group"> Country Code </InputLabel>
+            <Select labelId="group" id="group" value={countrycode} onChange={e => setCountryCode(e.target.value)}  className={classes.groupDownButton}>
+              {allcountrycode && allcountrycode.map((comp, i) => {
+                  return <MenuItem value={comp.dial_code} key={i}> {comp.dial_code + "  " + comp.name} </MenuItem>
+                })}
+            </Select> 
 
               <TextField
                 id="email"
@@ -158,7 +193,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 margin="normal"
-                placeholder="email"
+                placeholder="Email"
                 type="text"
                 fullWidth
               />
@@ -170,6 +205,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                   <Button
                     onClick={() =>
                       addContactsHandler(
+                            name,
                             company,
                             mobile,
                             countrycode,

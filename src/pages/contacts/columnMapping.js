@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import API from "../../config";
+// import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Button, CircularProgress,
     Fade, Typography, Table,TableRow, TableHead, TableCell, InputLabel, Select, setCompany,MenuItem } from "@material-ui/core";
 
@@ -12,18 +13,26 @@ function ColumnMapping(props) {
     const [error, setError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [excelMessage, setExcelMessage] = useState("");
-    const [column, setColumn] = useState([]);
-    const [correctcolumns , setCorrectColumns] = useState([]);
-    const [email, setEmail] = useState("");
-    const [mobile, setMobile] = useState("");
-    const [country, setCountry] = useState("");
+    const [column, setColumn] = useState([]);     //column names from backend
+    const [name, setName] = useState("");
+    const [nameColumn, setNameColumn] = useState("");
 
-    const classes = useStyles();
+    const [mobile, setMobile] = useState("");
+    const [mobileColumn, setMobileColumn] = useState("");
+
+    const [email, setEmail] = useState("");
+    const [emailColumn, setEmailColumn] = useState("");
+
+    const [country, setCountry] = useState("");
+    const [countryColumn, setCountryColumn] = useState("");
+
+  
+  const classes = useStyles();
 
   const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
   
   const mappingColumns = async(file) => {
-    const response = await fetch("http://localhost:4000/mappingsheet",{
+    const response = await fetch(`${API}/mappingsheet`,{
             method: "POST",
             headers: {
                 "Authorization" : `Bearer ${isAuth.token}`,
@@ -42,29 +51,46 @@ function ColumnMapping(props) {
   }, []);
 
   const handleonChange = (e,i) => {
-      if(i === 0) {
+
+    console.log("iiiiiii : " +i);
+
+      if(e.target.value === "name") {
+        setNameColumn(i);
+        setName(e.target.value);
+      }
+      if(e.target.value === "email") {
+        setEmailColumn(i);
         setEmail(e.target.value);
       }
-      if(i === 1) {
+      if(e.target.value === "mobile_number") {
+        setMobileColumn(i);
         setMobile(e.target.value);
       }
-      if(i === 2) {
+      if(e.target.value === "country_code") {
+        setCountryColumn(i);
         setCountry(e.target.value);
       }
-      setCorrectColumns(e.target.value);
   }
 
   const uploadData = async() => {
     try{
       setIsLoading(true);
-      
-      const response = await fetch("http://localhost:4000/upload/data",{
+
+      const Obj = {};
+      Obj[`${nameColumn}`] = name;
+      Obj[`${emailColumn}`] = email;
+      Obj[`${mobileColumn}`] = mobile;
+      Obj[`${countryColumn}`] = country;
+      Obj["filename"] = props.filename;
+      Obj["originalCompanyID"] = isAuth.user.company;
+
+      const response = await fetch(`${API}/upload/data`,{
             method: "POST",
             headers: {
                 "Authorization" : `Bearer ${isAuth.token}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({newColumn0 : email, newColumn1 : mobile , newColumn2 : country, filename:props.filename , originalCompanyID : isAuth.user.company})
+            body: JSON.stringify(Obj)
         }).then(res => res.json());
 
         console.log("uploading response : " +JSON.stringify(response));
@@ -112,7 +138,6 @@ function ColumnMapping(props) {
 
             <br/><br/><br/>
 
-          
             <Table>
                 <TableRow>
                       <TableCell>
@@ -129,12 +154,13 @@ function ColumnMapping(props) {
                       <TableCell key={i}>
                       { col }  :  
                       </TableCell>
-                   
+  
                       <TableCell key={i}>
-                        <Select labelId="columns" id="columns" value={correctcolumns[i]}  onChange={ e => handleonChange(e, i) } className={classes.mappingdropdown}>
-                          <MenuItem value="email" > Email </MenuItem>
-                          <MenuItem value="mobile_number" > Mobile_Number </MenuItem>
-                          <MenuItem value="country_code" > Country_Code </MenuItem>
+                        <Select labelId="columns" id="columns"  onChange={ e => handleonChange(e, i) } className={classes.mappingContainer}>
+                          <MenuItem value="name" disabled={name.length > 1} > Name </MenuItem>
+                          <MenuItem value="mobile_number" disabled={mobile.length > 1} > Mobile Number </MenuItem>
+                          <MenuItem value="country_code" disabled={country.length > 1} > Country Code </MenuItem>
+                          <MenuItem value="email" disabled={email.length > 1} > Email </MenuItem>
                         </Select>
                       </TableCell>
                     </TableRow>

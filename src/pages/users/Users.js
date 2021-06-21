@@ -1,7 +1,9 @@
 import React,{useEffect, useState} from "react";
+import API from "../../config";
 import { Grid, Button} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import MUIDataTable from "mui-datatables";
+import moment from "moment";
 import {
   Edit as EditIcon,
 } from "@material-ui/icons";
@@ -23,7 +25,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
       userCompanyID = "admin";
     }
     
-     fetch("http://localhost:4000/users",{
+     fetch(`${API}/users`,{
         method: "POST",
         headers: {
         "Authorization" : `Bearer ${isAuth.token}`,
@@ -44,14 +46,14 @@ useEffect(() => {
       let columns = [];
       if(isAuth.user.role === "user") {
         dataa.forEach(element => {
-          datatableData.push([
-           [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
+          datatableData.push([                 
+           [`${element.name}`], [`${element.email}`], [`${element.role}`] ,   [`${moment(element.createdAt).format('DD-MM-YYYY, h:mm:ss')}`], [`${moment(element.modifiedAt).format('DD-MM-YYYY, h:mm:ss')}`], [ <EditIcon/> ]
             ]) }) 
         columns = ["Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
       }else{
         dataa.forEach(element => {
           datatableData.push([
-           [`${element.company.name}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,  [`${element.createdAt}`], [`${element.modifiedAt}`], [ <EditIcon/> ]
+           [`${element.company.name}`], [`${element.name}`], [`${element.email}`], [`${element.role}`] ,  [`${moment(element.createdAt).format('DD-MM-YYYY, h:mm:ss')}`], [`${moment(element.modifiedAt).format('DD-MM-YYYY, h:mm:ss')}`], [ <EditIcon/> ]
             ]) }) 
         columns = ["Company", "Name", "Email", "Role", "Created At", "Modified At", "Edit"]; 
       }

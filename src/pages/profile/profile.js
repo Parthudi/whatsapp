@@ -24,7 +24,6 @@ export default function MessagePage() {
   //  var [contactValue, setContactValue] = useState("")
   //  var [messageValue, setMessageValue] = useState("")
  
-
   return (
     <>
       <PageTitle title="Profile" />
