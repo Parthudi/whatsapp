@@ -44,6 +44,10 @@ const contactSchema = new mongoose.Schema({
         required: true, 
         default: Date.now 
         },
+    modifiedBy: {
+        type: ObjectId,
+        ref: "userstacks"
+    },
     modifiedAt: {
         type: Date, 
         required: true, 

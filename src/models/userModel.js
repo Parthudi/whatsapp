@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema({
         required: true, 
         default: Date.now 
     },
+    modifiedBy: {
+        type: ObjectId,
+        ref: "userstacks"
+    },
     role: {
         type: String,
         enum: ['user', 'admin'],

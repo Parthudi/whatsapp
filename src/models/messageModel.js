@@ -20,6 +20,10 @@ const messageSchema = new mongoose.Schema({
         type: ObjectId,
         ref: "group"
     },
+    modifiedBy: {
+        type: ObjectId,
+        ref: "userstacks"
+    },
     message: {
         type: String,
         required:true

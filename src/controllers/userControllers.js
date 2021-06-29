@@ -117,7 +117,7 @@ exports.read = async(req, res) => {
 
             if(CompanyID === "admin") {
                 console.log("user is admin");
-                const user = await User.find().populate("company").select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+                const user = await User.find().populate("company").select("-tokenze").select("-updatedAt").select("-__v").select("-password");
 
                 const onlyUsers = [];
                 const removeAdmins = user.map((u) => {
@@ -130,7 +130,7 @@ exports.read = async(req, res) => {
 
                 await res.status(201).send({onlyUsers});
             }else{
-                const onlyUsers = await User.find({company : CompanyID}).select("-tokenze").select("-updatedAt").select("-__v").select("-_id").select("-password");
+                const onlyUsers = await User.find({company : CompanyID}).select("-tokenze").select("-updatedAt").select("-__v").select("-password");
                 const company = await Company.find({_id : CompanyID});
                 const companyName = company.name;
                 console.log("onlyUsers : " +onlyUsers);
@@ -145,9 +145,16 @@ exports.read = async(req, res) => {
 
 exports.update = async(req, res) => {
     try{
-        const user = await User.findOneAndUpdate( {_id: req.profile._id}, {$set: req.body}, {new: true, useFindAndModify: false})
-
-        res.status(201).send(user)
+        console.log(JSON.stringify(req.body));
+        const validDetails = {};
+        req.body.name.length > 1  ? validDetails["name"]  = req.body.name : null;
+        req.body.role.length > 1  ? validDetails["role"]  = req.body.role : null;
+        req.body.email.length > 1 ? validDetails["email"] = req.body.email : null;
+        validDetails["modifiedBy"] = req.body.modifiedBy;
+        
+        const user = await User.findOneAndUpdate( {_id: req.body.userid}, {$set: validDetails}, {new: true, useFindAndModify: false})
+        
+        res.status(201).send({message: "User Info Updated !!"});
     } catch(error) {
         res.status(401).send(error)
     }

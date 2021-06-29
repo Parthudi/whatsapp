@@ -10,19 +10,26 @@ exports.autnenticationMessage = async(req, res) => {
             console.log("whatsappClient inside qrAuthentication  : " +JSON.stringify(whatsappClient.newClient));
             await res.status(200).send({user :"User Is Authenticated"});
       }else {
+
         client.on('authenticated', (session) => {
             whatsappClient.newClient = session;
          });
         
        if(whatsappClient.newClient == null || undefined) {
-        client.on("qr", async(qr) => {
-            console.log("QR RECEIVED : " +qr);
-            await res.status(200).send(JSON.stringify(qr));
-        });
-       }
-        client.initialize();
+            client.on("qr", async(qr) => {
+                try{
+                    console.log("try .......................... ")
+                    console.log("QR RECEIVED : " +qr);
+                    await res.status(200).send(JSON.stringify(qr));
+                }catch(error){
+                    console.log("catch qr code ===============");
+                }
+            });
+        }
+       client.initialize();
     }
   } catch(error) {
-        res.status(400).send("error:" +error.message);
+        console.log("erorrororororoor");
+        res.status(400).send(error.message);
     }
 }

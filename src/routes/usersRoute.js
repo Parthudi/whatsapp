@@ -12,7 +12,7 @@ route.param('userid', findUserId)
 route.post('/user/logout/:userid',Auth, isAuth, logoutUser)
 route.post("/user/message" ,Auth,  message);
 
-route.patch('/user/update/:userid',Auth, isAuth, update )
+route.patch('/user/update/:userid',Auth, update )
 route.delete('/user/delete/:userid',Auth, isAuth, remove )
 
 route.post('/users',Auth, read)
