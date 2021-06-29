@@ -4,7 +4,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Grid ,TextField,  Button,
   CircularProgress,
   Fade,InputLabel, Select,MenuItem } from "@material-ui/core";
-import QRCode from "qrcode.react";
+import QRCode, { propTypes } from "qrcode.react";
 import { Send as SendIcon } from "@material-ui/icons";
 
 import { messageUser} from "../../context/UserContext";
@@ -39,7 +39,7 @@ const fetchCountryCode = async() => {
  
   const QrCodeHandler = async() => {
         try{
-          setIsLoading(true);
+          // setIsLoading(true);
           const response = await fetch(`${API}/users/auth`, {
                   method: "GET",
                   headers: {
@@ -50,35 +50,44 @@ const fetchCountryCode = async() => {
     
                 response.length > 1 ?  console.log("response of qrcodeHandler : " +response) : console.log("user authenticated")
                 response.length > 1 ? setResponse(response) : setResponse("User authenticated");
-                setIsLoading(false);
+                // setIsLoading(false);
                 setShowQr(false);
           }catch(error){
               console.log(error);
               setError(true);
-              setIsLoading(false);
+              // setIsLoading(false);
         } 
   }
 
-  useEffect(async() => {
+ 
+  useEffect(() => {
     fetchCountryCode();
     QrCodeHandler();
+    const interval = setInterval(function() {
+      QrCodeHandler();
+
+      if(!response.includes("Authenticated") || !response.includes("authenticated")){
+        console.log("kill interval")
+        clearInterval(interval);
+      }
+    }, 25000);
   }, []);
 
   const messageUserHandler = (countrycode,contact, message) => {
     try{
-      setIsLoading(true);
+      // setIsLoading(true);
       messageUser(countrycode,contact, message, isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
         if(response.error){
           console.log(response.error);
           setError(true);
-          setIsLoading(false);
+          // setIsLoading(false);
        }
         if(response.includes("Sent")) {
           setResponse("");
           setMessageValue("");
           setError(false);
-          setIsLoading(false);
+          // setIsLoading(false);
           setShowMessage(response);
 
           setTimeout(() => { 
@@ -88,7 +97,7 @@ const fetchCountryCode = async() => {
            console.log("inside else ");
               setMessageValue("");
               setError(false);
-              setIsLoading(false);
+              // setIsLoading(false);
               setShowMessage(response); 
               
               if(response && response.includes("Session")){
@@ -208,7 +217,7 @@ const fetchCountryCode = async() => {
               </div>
           </form>  
         </Grid>
-       
+        
       {response.length >= 25 ? 
         (<Grid item xs={12} md={4}>
           <Widget title="QR CODE GENERATOR" disableWidgetMenu>

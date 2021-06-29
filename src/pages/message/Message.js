@@ -85,7 +85,7 @@ export default function MessagePage(props) {
             {/* </div>    */}
       </Grid>
       <Grid item xs={12} md={12} className={classes.backgroundSetting}>
-        <Widget  disableWidgetMenu> 
+        <Widget disableWidgetMenu> 
               {changePage === "personal" ? <PersonalMessage /> : null }
               {changePage === "group" ? <GroupMessage /> : null }
               {changePage === "allcontact" ? <AllContacts /> : null }

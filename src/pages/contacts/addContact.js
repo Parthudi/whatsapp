@@ -133,9 +133,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
                 //     </Select> 
                 // </div>    
                       :
-                        (  <div>
+                        ( <div>
                             <InputLabel id="company"> Company </InputLabel>
-                            <Select labelId="company" id="company" value={company}  onChange={e => setCompany(e.target.value)}className={classes.dropContainer}>
+                            <Select labelId="company" id="company" value={company}  onChange={e => setCompany(e.target.value)} className={classes.dropContainer}>
                               {allcompany && allcompany.map((comp, i) => {
                                 return <MenuItem value={comp._id} key={i}> {comp.name} </MenuItem>
                               })}

@@ -31,7 +31,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const QrCodeHandler = async() => {
         try{
-          setIsLoading(true);
+          // setIsLoading(true);
           const response = await fetch(`${API}/contact/auth`, {
                   method: "GET",
                   headers: {
@@ -53,11 +53,19 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   useEffect(() => {
     QrCodeHandler();
+    const interval = setInterval(function() {
+      QrCodeHandler();
+
+    if(!response.includes("Authenticated") || !response.includes("authenticated")){
+        console.log("kill interval")
+        clearInterval(interval);
+      }
+    }, 25000);
   }, [])
 
   const messageAllHandler = (message) => {
     try{
-      setIsLoading(true);
+      // setIsLoading(true);
       const company = isAuth.user.role === "user" ? isAuth.user.company : "admin";
       messageAllUsers(message, company , isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
@@ -67,11 +75,11 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
             setError(true);
             setIsLoading(false);
         }
-        if(response.includes("Sent")) {
+        if(response && response.includes("Sent")) {
           setResponse("");
           setMessageValue("");
           setError(false);
-          setIsLoading(false);
+          // setIsLoading(false);
           setShowMessage(response);
 
           setTimeout(() => { 
@@ -80,7 +88,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
          }else{
               setMessageValue("");
               setError(false);
-              setIsLoading(false);
+              // setIsLoading(false);
               setShowMessage(response);  
               
               if(response && response.includes("Session")){

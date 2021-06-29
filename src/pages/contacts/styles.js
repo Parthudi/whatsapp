@@ -51,7 +51,7 @@ export default makeStyles(theme => ({
     },
   },
   dropContainer: {
-    width: 1350,
+    width: 550,
   },
   dataTable: {
     marginTop: theme.spacing(5),

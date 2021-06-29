@@ -126,7 +126,7 @@ const signOut = async(dispatch, history, token, userID) => {
   const response = await fetch(`${API}/user/logout/${userID}`,{
                     method: "POST",
                     headers: {
-                            Authorization: `Bearer ${token}`,
+                            "Authorization": `Bearer ${token}`,
                             "Content-Type": "application/json"
                     },
                   }).then(response => response.json()) ;

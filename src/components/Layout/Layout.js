@@ -44,6 +44,7 @@ import AllContacts from "../../pages/message/allContactMessage"
 import GroupMessage from "../../pages/message/groupMessage"
 import UploadExcelSheet from "../../pages/contacts/uploadSheet"
 import ColumnMapping from "../../pages/contacts/columnMapping"
+import EditUser from "../../pages/users/EditUser"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -72,6 +73,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
               <Route path="/app/users" exact component={Users} />
               <Route path="/app/user/register" exact component={UserRegister} />
+              <Route path="/app/user/edit-user" exact component={EditUser} />
 
               <Route path="/app/dashboard" component={Dashboard} />
 

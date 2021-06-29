@@ -160,6 +160,7 @@ function CreateGroups(props) {
                 margin="normal"
                 placeholder="Group Name"
                 type="text"
+                autoComplete="off"
                 fullWidth
               />
 
@@ -176,6 +177,7 @@ function CreateGroups(props) {
                 margin="normal"
                 placeholder="Contacts"
                 type="text"
+                autoComplete="off"
                 fullWidth
               />
 

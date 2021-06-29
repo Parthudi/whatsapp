@@ -38,7 +38,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
     try{
     const userID = isAuth.user.role === "user" ? isAuth.user._id : "admin" ;;
 
-        setIsLoading(true);
+        // setIsLoading(true);
         const allGroups = await fetch(`${API}/groups`, {
                 method: "POST",
                 headers: {
@@ -49,10 +49,10 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               }).then(res => res.json()) 
   
               console.log("allGroups : " +JSON.stringify(allGroups));
-              setIsLoading(false);
+              // setIsLoading(false);
               setAllGroups(allGroups);
         }catch(error){
-            setIsLoading(false);
+            // setIsLoading(false);
             setError(true);
             console.log(error);
       } 
@@ -60,7 +60,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
  
   const QrCodeHandler = async() => {
         try{
-          setIsLoading(true);
+          // setIsLoading(true);
           const response = await fetch(`${API}/group/auth`, {
                   method: "GET",
                   headers: {
@@ -71,36 +71,44 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
     
                 response.length > 1 ?  console.log("response of qrcodeHandler : " +response) : console.log("user authenticated")
                 response.length > 1 ? setResponse(response) : setResponse("User authenticated");
-                setIsLoading(false);
+                // setIsLoading(false);
                 setShowQr(false);
           }catch(error){
               console.log(error);
               setError(true);
-              setIsLoading(false);
+              // setIsLoading(false);
         } 
   }
 
   useEffect(() => {
     allGroups();
     QrCodeHandler();
+    const interval = setInterval(function() {
+      QrCodeHandler();
+
+    if(!response.includes("Authenticated") || !response.includes("authenticated")){
+        console.log("kill interval")
+        clearInterval(interval);
+      }
+    }, 25000);
   }, []);
 
   
   const messageGroupHandler = (group, message) => {
     try{
-      setIsLoading(true);
+      // setIsLoading(true);
       messageGroup(group, message, isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
         if(response.error){
             console.log(response.error);
             setError(true);
-            setIsLoading(false);
+            // setIsLoading(false);
         }
         if(response.includes("Sent")) {
           setResponse("");
           setMessageValue("");
           setError(false);
-          setIsLoading(false);
+          // setIsLoading(false);
           setShowMessage(response);
 
           setTimeout(() => { 
@@ -109,7 +117,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
          }else{
               setMessageValue("");
               setError(false);
-              setIsLoading(false);
+              // setIsLoading(false);
               setShowMessage(response); 
               
               if(response && response.includes("Session")){
