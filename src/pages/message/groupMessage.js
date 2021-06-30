@@ -23,7 +23,7 @@ export default function GroupMessage() {
   var classes = useStyles();
 
    // local
-   const [isLoading, setIsLoading] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
    const [error, setError] = useState(null);
    const [response, setResponse] = useState("");
    const [messageValue, setMessageValue] = useState("");
@@ -38,7 +38,6 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
     try{
     const userID = isAuth.user.role === "user" ? isAuth.user._id : "admin" ;;
 
-        // setIsLoading(true);
         const allGroups = await fetch(`${API}/groups`, {
                 method: "POST",
                 headers: {
@@ -49,10 +48,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
               }).then(res => res.json()) 
   
               console.log("allGroups : " +JSON.stringify(allGroups));
-              // setIsLoading(false);
               setAllGroups(allGroups);
         }catch(error){
-            // setIsLoading(false);
+            setIsLoading(false);
             setError(true);
             console.log(error);
       } 
@@ -60,7 +58,6 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
  
   const QrCodeHandler = async() => {
         try{
-          // setIsLoading(true);
           const response = await fetch(`${API}/group/auth`, {
                   method: "GET",
                   headers: {
@@ -71,18 +68,20 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
     
                 response.length > 1 ?  console.log("response of qrcodeHandler : " +response) : console.log("user authenticated")
                 response.length > 1 ? setResponse(response) : setResponse("User authenticated");
-                // setIsLoading(false);
+                setIsLoading(false);
                 setShowQr(false);
           }catch(error){
               console.log(error);
               setError(true);
-              // setIsLoading(false);
+              setIsLoading(false);
         } 
   }
 
   useEffect(() => {
+
     allGroups();
     QrCodeHandler();
+
     const interval = setInterval(function() {
       QrCodeHandler();
 
@@ -96,19 +95,18 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
   
   const messageGroupHandler = (group, message) => {
     try{
-      // setIsLoading(true);
       messageGroup(group, message, isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
         if(response.error){
             console.log(response.error);
             setError(true);
-            // setIsLoading(false);
+            setIsLoading(false);
         }
         if(response.includes("Sent")) {
           setResponse("");
           setMessageValue("");
           setError(false);
-          // setIsLoading(false);
+          setIsLoading(false);
           setShowMessage(response);
 
           setTimeout(() => { 
@@ -117,7 +115,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
          }else{
               setMessageValue("");
               setError(false);
-              // setIsLoading(false);
+              setIsLoading(false);
               setShowMessage(response); 
               
               if(response && response.includes("Session")){
@@ -144,7 +142,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         
         <Grid item xs={12} md={response.length < 22 ? 12 : 8}>
 
-          { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}} >
+          { isLoading ? (<Fade in={isLoading}  >
                             <CircularProgress color="secondary" />
                         </Fade>) : null }
           <Fade in={error}>

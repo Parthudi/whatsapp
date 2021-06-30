@@ -20,7 +20,7 @@ export default function PersonalMessage() {
   var classes = useStyles();
 
    // local
-   const [isLoading, setIsLoading] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
    const [error, setError] = useState(null);
    const [response, setResponse] = useState("");
    const [contactValue, setContactValue] = useState("");
@@ -39,7 +39,6 @@ const fetchCountryCode = async() => {
  
   const QrCodeHandler = async() => {
         try{
-          // setIsLoading(true);
           const response = await fetch(`${API}/users/auth`, {
                   method: "GET",
                   headers: {
@@ -50,19 +49,19 @@ const fetchCountryCode = async() => {
     
                 response.length > 1 ?  console.log("response of qrcodeHandler : " +response) : console.log("user authenticated")
                 response.length > 1 ? setResponse(response) : setResponse("User authenticated");
-                // setIsLoading(false);
+                setIsLoading(false);
                 setShowQr(false);
           }catch(error){
               console.log(error);
               setError(true);
-              // setIsLoading(false);
+              setIsLoading(false);
         } 
   }
 
  
   useEffect(() => {
-    fetchCountryCode();
-    QrCodeHandler();
+      fetchCountryCode();
+      QrCodeHandler();
     const interval = setInterval(function() {
       QrCodeHandler();
 
@@ -81,13 +80,13 @@ const fetchCountryCode = async() => {
         if(response.error){
           console.log(response.error);
           setError(true);
-          // setIsLoading(false);
+          setIsLoading(false);
        }
         if(response.includes("Sent")) {
           setResponse("");
           setMessageValue("");
           setError(false);
-          // setIsLoading(false);
+          setIsLoading(false);
           setShowMessage(response);
 
           setTimeout(() => { 
@@ -97,7 +96,7 @@ const fetchCountryCode = async() => {
            console.log("inside else ");
               setMessageValue("");
               setError(false);
-              // setIsLoading(false);
+              setIsLoading(false);
               setShowMessage(response); 
               
               if(response && response.includes("Session")){
@@ -124,7 +123,7 @@ const fetchCountryCode = async() => {
         
         <Grid item xs={12} md={response.length < 22 ? 12 : 8}>
           
-          { isLoading ? (<Fade in={isLoading} style={{marginLeft:"50px"}}>
+          { isLoading ? (<Fade in={isLoading} >
                             <CircularProgress color="secondary" />
                          </Fade>) : null }
           <Fade in={error}>

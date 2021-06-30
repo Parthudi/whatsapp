@@ -20,7 +20,7 @@ export default function AllContacts() {
   var classes = useStyles();
 
    // local
-   const [isLoading, setIsLoading] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
    const [error, setError] = useState(null);
    const [response, setResponse] = useState("");
    const [messageValue, setMessageValue] = useState("");
@@ -31,7 +31,6 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const QrCodeHandler = async() => {
         try{
-          // setIsLoading(true);
           const response = await fetch(`${API}/contact/auth`, {
                   method: "GET",
                   headers: {
@@ -52,7 +51,9 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
   }
 
   useEffect(() => {
+
     QrCodeHandler();
+
     const interval = setInterval(function() {
       QrCodeHandler();
 
@@ -65,7 +66,6 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
 
   const messageAllHandler = (message) => {
     try{
-      // setIsLoading(true);
       const company = isAuth.user.role === "user" ? isAuth.user.company : "admin";
       messageAllUsers(message, company , isAuth.token, isAuth.user.company, isAuth.user._id).then((response) => {
         console.log("response : " +response);
@@ -79,7 +79,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
           setResponse("");
           setMessageValue("");
           setError(false);
-          // setIsLoading(false);
+          setIsLoading(false);
           setShowMessage(response);
 
           setTimeout(() => { 
@@ -88,7 +88,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
          }else{
               setMessageValue("");
               setError(false);
-              // setIsLoading(false);
+              setIsLoading(false);
               setShowMessage(response);  
               
               if(response && response.includes("Session")){
@@ -114,7 +114,7 @@ const isAuth =  JSON.parse(localStorage.getItem('TOKEN'));
         
         <Grid item xs={12} md={response.length < 22 ? 12 : 8}>
 
-          { isLoading ? (<Fade in={isLoading}  style={{marginLeft:"50px"}}>
+          { isLoading ? (<Fade in={isLoading} >
                              <CircularProgress color="secondary" />
                           </Fade>) : null }
           <Fade in={error}>
