@@ -4,22 +4,24 @@ whatsappClient = {};
 
 exports.autnenticationMessage = async(req, res) => {
     try {
-        console.log("Checking Auth");
-
-    if (whatsappClient.newClient) {
+        if (whatsappClient && whatsappClient.newClient) {
             console.log("whatsappClient inside qrAuthentication  : " +JSON.stringify(whatsappClient.newClient));
             await res.status(200).send({user :"User Is Authenticated"});
-      }else {
 
-        client.on('authenticated', (session) => {
-            whatsappClient.newClient = session;
-         });
+        }else {
+            client.on(`authenticated`, (session) => {
+                console.log("session is : " +session);
+                whatsappClient["newClient"] = session;
+            });
         
-       if(whatsappClient.newClient == null || undefined) {
+            client.on(`auth_failure`, (msg) => {
+                console.log(`auth_failure`, msg);
+            });
+        
+        if(whatsappClient.newClient == null || undefined) {
+            console.log("whatsappClient.newClient is null");
             client.on("qr", async(qr) => {
                 try{
-                    console.log("try .......................... ")
-                    console.log("QR RECEIVED : " +qr);
                     await res.status(200).send(JSON.stringify(qr));
                 }catch(error){
                     console.log("catch qr code ===============");
